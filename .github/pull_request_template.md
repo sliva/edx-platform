@@ -11,6 +11,9 @@ ticket, omit this.
 
 **Dependencies**: None
 
+**User Impact**: Which edX user roles will this change impact? Common user roles are "Learner", "Course Author",
+"Developer" and "Admin".
+
 **Screenshots**: Always include screenshots if there is any change to the UI (ideally, both "before" and "after"
 screenshots, if applicable). If there are no UI changes, omit this.
 
