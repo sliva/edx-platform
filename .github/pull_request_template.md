@@ -1,34 +1,31 @@
-**Description**
+<!--
+Use this template as a guide. Omit sections that don't apply.
+More details about the template are at https://github.com/edx/open-edx-proposals/pull/180
+-->
 
-Describe what this pull request changes, and why. If there is a big design decision involved, put it in the
-codebase (docstring/README/ADR) and link to it here.
+## Description
 
-**tickets and issues**: If there is a related publicly viewable JIRA ticket or GitHub issue, link to it here. If the
-ticket is not publicly viewable, take care to repeat any necessary information in the description. If there is no
-ticket, omit this.
+Describe what this pull request changes, and why. Include implications for people using this change.
+Design decisions should be documented in the repo (docstring / README / ADR) and linked here.
 
-**Discussions**: Link to any public discussions on discuss.openedx.org or elsewhere. Otherwise omit this.
-
-**Dependencies**: None
-
-**User Impact**: Which edX user roles will this change impact? Common user roles are "Learner", "Course Author",
+Useful information:
+- Which edX user roles will this change impact? Common user roles are "Learner", "Course Author",
 "Developer" and "Admin".
+- How can it be tested?
+- Include screenshots for changes to the UI (ideally, both "before" and "after" screenshots, if applicable).
+- Configuration changes needed.
 
-**Screenshots**: Always include screenshots if there is any change to the UI (ideally, both "before" and "after"
-screenshots, if applicable). If there are no UI changes, omit this.
+## Supporting information
 
-**Merge deadline**: "None" if there's no rush, "ASAP" if it's critical, or provide a specific date if there is one.
+Link to other information about the change, such as Jira issues, GitHub issues, or Discourse discussions.
+Be sure to check they are publicly readable, or if not, repeat the information here.
 
-**Testing instructions**:
+## Deadline
 
-1. Step by step manual setup/testing/verification instructions for your reviewers go here. Make sure you (the author)
-have already manually tested it using the same steps.
-2. Be sure to include any necessary configuration steps, like setting feature flags
-3. Step 3
+"None" if there's no rush, "ASAP" if it's critical, or provide a specific date or event if there is one.
 
-**Author notes and concerns**:
+## Other information
 
-1. List any concerns, known bugs, or open questions.
-2. 🚩 Are there any database migrations? See
-[Everything About (edx) Migrations](https://openedx.atlassian.net/wiki/spaces/AC/pages/23003228/Everything+About+Database+Migrations)
-3. If there are none, omit this section
+Include anything that will help reviewers and consumers of the change.
+- Does this change depend on other changes elsewhere?
+- Any special concerns or limitations? Migrations? A11y?
