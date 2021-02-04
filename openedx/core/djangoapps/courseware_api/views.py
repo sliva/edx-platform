@@ -30,7 +30,7 @@ from lms.djangoapps.courseware.access_response import (
 )
 from lms.djangoapps.courseware.context_processor import user_timezone_locale_prefs
 from lms.djangoapps.courseware.courses import check_course_access, get_course_by_id
-from lms.djangoapps.courseware.masquerade import setup_masquerade
+from lms.djangoapps.courseware.masquerade import is_masquerading_as_specific_student, setup_masquerade
 from lms.djangoapps.courseware.module_render import get_module_by_usage_id
 from lms.djangoapps.courseware.tabs import get_course_tab_list
 from lms.djangoapps.courseware.toggles import REDIRECT_TO_COURSEWARE_MICROFRONTEND, course_exit_page_is_active
@@ -45,7 +45,10 @@ from openedx.features.content_type_gating.models import ContentTypeGatingConfig
 from openedx.features.course_duration_limits.access import get_access_expiration_data
 from openedx.features.discounts.utils import generate_offer_data
 from common.djangoapps.student.models import (
-    CourseEnrollment, CourseEnrollmentCelebration, LinkedInAddToProfileConfiguration
+    CourseEnrollment,
+    CourseEnrollmentCelebration,
+    LinkedInAddToProfileConfiguration,
+    UserCelebration
 )
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.search import path_to_location
@@ -76,7 +79,7 @@ class CoursewareMeta:
         self.request.user = self.effective_user
         self.is_staff = has_access(self.effective_user, 'staff', self.overview).has_access
         self.enrollment_object = CourseEnrollment.get_enrollment(self.effective_user, self.course_key,
-                                                                 select_related=['celebration'])
+                                                                 select_related=['celebration', 'user__celebration'])
 
     def __getattr__(self, name):
         return getattr(self.overview, name)
@@ -202,8 +205,12 @@ class CoursewareMeta:
         """
         Returns a list of celebrations that should be performed.
         """
+        should_celebrate_streak = False
+        if not is_masquerading_as_specific_student(self.effective_user, self.course_key):
+            should_celebrate_streak = UserCelebration.perform_streak_updates(self.effective_user, self.course_key)
         return {
             'first_section': CourseEnrollmentCelebration.should_celebrate_first_section(self.enrollment_object),
+            'should_celebrate_streak': should_celebrate_streak,
         }
 
     @property
