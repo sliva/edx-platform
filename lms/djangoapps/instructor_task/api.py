@@ -480,6 +480,7 @@ def generate_certificates_for_students(request, course_key, student_set=None, sp
     Raises AlreadyRunningError if certificates are currently being generated.
     Raises SpecificStudentIdMissingError if student_set is 'specific_student' and specific_student_id is 'None'
     """
+    # TODO: here
     if student_set:
         task_type = 'generate_certificates_student_set'
         task_input = {'student_set': student_set}

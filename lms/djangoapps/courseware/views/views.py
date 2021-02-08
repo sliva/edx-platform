@@ -1554,6 +1554,7 @@ def generate_user_cert(request, course_id):
         HttpResponse: 200 on success, 400 if a new certificate cannot be generated.
     """
 
+    # TODO: here
     if not request.user.is_authenticated:
         log.info(u"Anon user trying to generate certificate for %s", course_id)
         return HttpResponseBadRequest(

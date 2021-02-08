@@ -21,7 +21,7 @@ from lms.djangoapps.certificates.models import (
     CertificateStatuses,
     GeneratedCertificate
 )
-from lms.djangoapps.certificates.signals import fire_ungenerated_certificate_task
+from lms.djangoapps.certificates.signals import _fire_ungenerated_certificate_task
 from lms.djangoapps.certificates.tasks import CERTIFICATE_DELAY_SECONDS
 from lms.djangoapps.certificates.tests.factories import CertificateWhitelistFactory
 from lms.djangoapps.certificates.tests.factories import GeneratedCertificateFactory
@@ -158,7 +158,7 @@ class WhitelistGeneratedCertificatesTest(ModuleStoreTestCase):
                     whitelist=True
                 )
 
-                fire_ungenerated_certificate_task(self.user, self.ip_course.id)
+                _fire_ungenerated_certificate_task(self.user, self.ip_course.id)
                 mock_generate_certificate_apply_async.assert_not_called()
                 mock_generate_allowlist_task.assert_called_with(self.user, self.ip_course.id)
 
@@ -180,7 +180,7 @@ class WhitelistGeneratedCertificatesTest(ModuleStoreTestCase):
                     whitelist=True
                 )
 
-                fire_ungenerated_certificate_task(self.user, self.ip_course.id)
+                _fire_ungenerated_certificate_task(self.user, self.ip_course.id)
                 mock_generate_certificate_apply_async.assert_called_with(
                     countdown=CERTIFICATE_DELAY_SECONDS,
                     kwargs={
@@ -475,6 +475,6 @@ class CertificateGenerationTaskTest(ModuleStoreTestCase):
             return_value=None
         ) as mock_generate_certificate_apply_async:
             with override_waffle_switch(AUTO_CERTIFICATE_GENERATION_SWITCH, active=True):
-                fire_ungenerated_certificate_task(self.user, self.course.id)
+                _fire_ungenerated_certificate_task(self.user, self.course.id)
                 task_created = mock_generate_certificate_apply_async.called
                 self.assertEqual(task_created, should_create)

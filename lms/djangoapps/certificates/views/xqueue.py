@@ -50,6 +50,7 @@ def request_certificate(request):
             if status in [CertificateStatuses.unavailable, CertificateStatuses.notpassing, CertificateStatuses.error]:
                 log_msg = u'Grading and certification requested for user %s in course %s via /request_certificate call'
                 log.info(log_msg, username, course_key)
+                # TODO: here
                 status = generate_user_certificates(student, course_key, course=course)
             return HttpResponse(json.dumps({'add_status': status}), content_type='application/json')  # pylint: disable=http-response-with-content-type-json, http-response-with-json-dumps
         return HttpResponse(json.dumps({'add_status': 'ERRORANONYMOUSUSER'}), content_type='application/json')  # pylint: disable=http-response-with-content-type-json, http-response-with-json-dumps
@@ -66,6 +67,7 @@ def update_certificate(request):
     This view should only ever be accessed by the xqueue server
     """
 
+    # TODO: here
     status = CertificateStatuses
     if request.method == "POST":
 
