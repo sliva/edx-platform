@@ -50,7 +50,10 @@ def _update_cert_settings_on_pacing_change(sender, updated_course_overview, **kw
 
 
 @receiver(post_save, sender=CertificateWhitelist, dispatch_uid="append_certificate_whitelist")
-def _listen_for_certificate_whitelist_append(sender, instance, **kwargs):  # lint-amnesty, pylint: disable=missing-function-docstring, unused-argument
+def _listen_for_certificate_whitelist_append(sender, instance, **kwargs):  # pylint: disable=unused-argument
+    """
+    Listen for a user being added to or modified on the whitelist (allowlist)
+    """
     if not auto_certificate_generation_enabled():
         return
 
@@ -156,8 +159,7 @@ def fire_ungenerated_certificate_task(user, course_key, expected_verification_st
     if is_using_certificate_allowlist_and_is_on_allowlist(user, course_key):
         log.info('{course} is using allowlist certificates, and the user {user} is on its allowlist. Attempt will be '
                  'made to generate an allowlist certificate.'.format(course=course_key, user=user.id))
-        generate_allowlist_certificate_task(user, course_key)
-        return True
+        return generate_allowlist_certificate_task(user, course_key)
 
     log.info('{course} is not using allowlist certificates (or user {user} is not on its allowlist). The normal '
              'generation logic will be followed.'.format(course=course_key, user=user.id))
