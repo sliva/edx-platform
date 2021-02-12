@@ -10,7 +10,6 @@ from django.utils.decorators import available_attrs
 from six.moves.urllib.parse import urlparse  # lint-amnesty, pylint: disable=unused-import
 
 from common.djangoapps.third_party_auth.models import LTIProviderConfig
-from common.djangoapps.third_party_auth.provider import Registry  # lint-amnesty, pylint: disable=unused-import, unimport:skip
 
 
 def xframe_allow_whitelisted(view_func):
