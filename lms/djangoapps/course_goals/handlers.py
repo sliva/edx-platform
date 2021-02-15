@@ -3,7 +3,6 @@ Signal handlers for course goals.
 """
 
 
-import six  # lint-amnesty, pylint: disable=reimported
 from django.db import models
 from django.dispatch import receiver
 

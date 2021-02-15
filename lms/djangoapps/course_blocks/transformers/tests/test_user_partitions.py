@@ -10,7 +10,6 @@ from datetime import datetime
 from unittest.mock import patch
 
 import ddt
-import six
 
 from common.djangoapps.course_modes.tests.factories import CourseModeFactory
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory

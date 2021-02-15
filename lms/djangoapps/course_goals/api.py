@@ -6,7 +6,6 @@ Course Goals Python API
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from rest_framework.reverse import reverse
-from six import text_type
 
 from common.djangoapps.course_modes.models import CourseMode
 from openedx.features.course_experience import ENABLE_COURSE_GOALS

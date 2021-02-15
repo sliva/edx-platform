@@ -5,8 +5,6 @@ Test helpers for testing course block transformers.
 
 from unittest.mock import patch
 
-import six
-
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
 from lms.djangoapps.courseware.access import has_access

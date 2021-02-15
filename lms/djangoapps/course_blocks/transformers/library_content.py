@@ -6,7 +6,6 @@ Content Library Transformer.
 import json
 import logging
 
-import six
 from eventtracking import tracker
 
 from common.djangoapps.track import contexts

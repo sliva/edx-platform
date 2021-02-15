@@ -6,7 +6,6 @@ Tests for HiddenContentTransformer.
 from datetime import timedelta
 
 import ddt
-import six
 from django.utils.timezone import now
 
 from ..hidden_content import HiddenContentTransformer

@@ -7,7 +7,6 @@ from datetime import timedelta
 from unittest.mock import patch
 
 import ddt
-import six
 from django.utils.timezone import now
 
 from lms.djangoapps.courseware.tests.factories import BetaTesterFactory
