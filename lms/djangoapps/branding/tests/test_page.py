@@ -6,7 +6,6 @@ Tests for branding page
 import datetime
 from unittest.mock import Mock, patch
 
-import six
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponseRedirect

@@ -3,10 +3,9 @@ Tests the course meta badging events
 """
 
 
-from unittest.mock import patch  # lint-amnesty, pylint: disable=import-error
+from unittest.mock import patch
 
-import six
-from ddt import data, ddt, unpack  # lint-amnesty, pylint: disable=import-error
+from ddt import data, ddt, unpack
 from django.conf import settings
 from django.test.utils import override_settings
 

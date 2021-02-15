@@ -6,7 +6,6 @@ Helper functions for the course complete event that was originally included with
 import hashlib
 import logging
 
-import six
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _

@@ -5,20 +5,19 @@ Database models for the badges app
 
 from importlib import import_module
 
-import six
-from config_models.models import ConfigurationModel  # lint-amnesty, pylint: disable=import-error
+from config_models.models import ConfigurationModel
 from django.conf import settings
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible  # lint-amnesty, pylint: disable=no-name-in-module
 from django.utils.translation import ugettext_lazy as _
-from jsonfield import JSONField  # lint-amnesty, pylint: disable=import-error
+from jsonfield import JSONField
 from lazy import lazy  # lint-amnesty, pylint: disable=no-name-in-module
-from model_utils.models import TimeStampedModel  # lint-amnesty, pylint: disable=import-error
-from opaque_keys import InvalidKeyError  # lint-amnesty, pylint: disable=import-error
-from opaque_keys.edx.django.models import CourseKeyField  # lint-amnesty, pylint: disable=import-error
-from opaque_keys.edx.keys import CourseKey  # lint-amnesty, pylint: disable=import-error
+from model_utils.models import TimeStampedModel
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.django.models import CourseKeyField
+from opaque_keys.edx.keys import CourseKey
 
 from lms.djangoapps.badges.utils import deserialize_count_specs
 from openedx.core.djangolib.markup import HTML, Text

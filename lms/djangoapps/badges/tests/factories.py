@@ -5,10 +5,10 @@ Factories for Badge tests
 
 from random import random
 
-import factory  # lint-amnesty, pylint: disable=import-error
+import factory
 from django.core.files.base import ContentFile
-from factory import DjangoModelFactory  # lint-amnesty, pylint: disable=import-error
-from factory.django import ImageField  # lint-amnesty, pylint: disable=import-error
+from factory import DjangoModelFactory
+from factory.django import ImageField
 
 from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.badges.models import (  # lint-amnesty, pylint: disable=line-too-long

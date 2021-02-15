@@ -7,13 +7,12 @@ import hashlib
 import logging
 import mimetypes
 
-import requests  # lint-amnesty, pylint: disable=import-error
-import six
+import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from eventtracking import tracker  # lint-amnesty, pylint: disable=import-error
+from eventtracking import tracker
 from lazy import lazy  # lint-amnesty, pylint: disable=no-name-in-module
-from requests.packages.urllib3.exceptions import HTTPError  # lint-amnesty, pylint: disable=import-error
+from requests.packages.urllib3.exceptions import HTTPError
 
 from lms.djangoapps.badges.backends.base import BadgeBackend
 from lms.djangoapps.badges.models import BadgeAssertion

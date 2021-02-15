@@ -4,13 +4,12 @@ Tests for BadgrBackend
 
 
 from datetime import datetime
-from unittest.mock import Mock, call, patch  # lint-amnesty, pylint: disable=import-error
+from unittest.mock import Mock, call, patch
 
-import ddt  # lint-amnesty, pylint: disable=import-error
-import six
+import ddt
 from django.db.models.fields.files import ImageFieldFile
 from django.test.utils import override_settings
-from lazy.lazy import lazy  # lint-amnesty, pylint: disable=import-error, no-name-in-module
+from lazy.lazy import lazy  # lint-amnesty, pylint: disable=no-name-in-module
 
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
 from common.djangoapps.track.tests import EventTrackingTestCase

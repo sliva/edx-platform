@@ -3,7 +3,7 @@ Tests for the Badges app models.
 """
 
 
-from unittest.mock import Mock, patch  # lint-amnesty, pylint: disable=import-error
+from unittest.mock import Mock, patch
 
 from django.core.exceptions import ValidationError
 from django.core.files.images import ImageFile
@@ -11,7 +11,7 @@ from django.core.files.storage import default_storage
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.test.utils import override_settings
-from path import Path  # lint-amnesty, pylint: disable=import-error
+from path import Path
 
 from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.badges.models import (
