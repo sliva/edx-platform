@@ -1,12 +1,10 @@
 """Tests for the create_fake_certs management command. """
 
 
-import six
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
 from opaque_keys.edx.locator import CourseLocator
-from six import text_type
 
 from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.certificates.models import GeneratedCertificate

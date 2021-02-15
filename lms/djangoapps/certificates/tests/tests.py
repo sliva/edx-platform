@@ -6,7 +6,6 @@ Tests for the certificates models.
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-import six
 from ddt import data, ddt, unpack
 from django.conf import settings
 from milestones.tests.utils import MilestonesTestCaseMixin

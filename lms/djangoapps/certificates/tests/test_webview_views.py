@@ -8,7 +8,6 @@ from urllib.parse import urlencode
 from uuid import uuid4
 
 import ddt
-import six
 from django.conf import settings
 from django.test.client import Client, RequestFactory
 from django.test.utils import override_settings

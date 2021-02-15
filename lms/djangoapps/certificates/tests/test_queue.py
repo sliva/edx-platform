@@ -9,7 +9,6 @@ from unittest.mock import Mock, patch
 import ddt
 import freezegun
 import pytz
-import six
 from django.conf import settings
 from django.test import TestCase
 from django.test.utils import override_settings

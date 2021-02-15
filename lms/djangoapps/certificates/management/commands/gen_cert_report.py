@@ -7,7 +7,6 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count
 from opaque_keys.edx.keys import CourseKey
-from six import text_type
 
 from lms.djangoapps.certificates.models import GeneratedCertificate
 

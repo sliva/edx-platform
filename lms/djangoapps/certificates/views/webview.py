@@ -8,7 +8,7 @@ from datetime import datetime
 from uuid import uuid4
 
 import pytz
-import six
+import urllib
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
@@ -276,7 +276,7 @@ def _update_social_context(request, context, course, user_certificate, platform_
     if context.get('twitter_share_enabled', False):
         twitter_url = 'https://twitter.com/intent/tweet?text={twitter_share_text}&url={share_url}'.format(
             twitter_share_text=smart_str(context['twitter_share_text']),
-            share_url=six.moves.urllib.parse.quote_plus(smart_str(share_url))
+            share_url=urllib.parse.quote_plus(smart_str(share_url))
         )
     context['twitter_url'] = twitter_url
     context['linked_in_url'] = None

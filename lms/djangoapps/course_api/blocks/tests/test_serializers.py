@@ -5,8 +5,6 @@ Tests for Course Blocks serializers
 
 from unittest.mock import MagicMock
 
-import six
-
 from common.djangoapps.student.roles import CourseStaffRole
 from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.course_blocks.api import get_course_block_access_transformers, get_course_blocks

@@ -9,7 +9,6 @@ from uuid import uuid4
 
 import ddt
 import pytz
-import six
 from django.conf import settings
 from django.test import TestCase
 from django.test.utils import override_settings

@@ -8,7 +8,6 @@ from hashlib import md5
 from unittest import TestCase
 
 import ddt
-import six
 from django.core.exceptions import ImproperlyConfigured
 from django.test import RequestFactory
 from django.test.utils import override_settings
@@ -537,7 +536,7 @@ class CourseIdListViewTestCase(CourseApiTestViewMixin, ModuleStoreTestCase):
 class LazyPageNumberPaginationTestCase(TestCase):  # lint-amnesty, pylint: disable=missing-class-docstring
 
     def test_lazy_page_number_pagination(self):
-        number_sequence = range(20)
+        number_sequence = range(20)  # lint-amnesty, pylint: disable=range-builtin-not-iterating
         even_numbers_lazy_sequence = LazySequence(
             (
                 number for number in number_sequence
@@ -566,7 +565,7 @@ class LazyPageNumberPaginationTestCase(TestCase):  # lint-amnesty, pylint: disab
         self.assertDictEqual(expected_response, paginated_response.data)
 
     def test_not_found_error_for_invalid_page(self):
-        number_sequence = range(20)
+        number_sequence = range(20)  # lint-amnesty, pylint: disable=range-builtin-not-iterating
         even_numbers_lazy_sequence = LazySequence(
             (
                 number for number in number_sequence

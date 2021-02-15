@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 
 import ddt
 import pytz
-import six
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.test import TestCase

@@ -6,7 +6,6 @@ import json
 from uuid import uuid4
 
 import ddt
-import six
 from django.conf import settings
 from django.core.cache import cache
 from django.test.client import Client

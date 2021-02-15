@@ -7,7 +7,6 @@ import random
 from uuid import uuid4
 
 import lxml.html
-import six
 from django.conf import settings
 from django.test.client import RequestFactory
 from django.urls import reverse

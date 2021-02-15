@@ -6,7 +6,6 @@ Tests for ProctoredExamTransformer.
 from unittest.mock import Mock, patch
 
 import ddt
-import six
 from milestones.tests.utils import MilestonesTestCaseMixin
 
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory

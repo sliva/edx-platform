@@ -10,7 +10,6 @@ certificates models or any other certificates modules.
 
 import logging
 
-import six
 from django.db.models import Q
 from eventtracking import tracker
 from opaque_keys.edx.django.models import CourseKeyField

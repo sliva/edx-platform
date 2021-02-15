@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from opaque_keys.edx.locator import CourseLocator
-from six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 from waffle.testutils import override_switch
 
 from common.djangoapps.course_modes.models import CourseMode

@@ -8,7 +8,6 @@ from unittest.mock import patch
 
 import ddt
 import pytz
-import six
 from config_models.models import cache
 from django.conf import settings
 from django.test import RequestFactory, TestCase

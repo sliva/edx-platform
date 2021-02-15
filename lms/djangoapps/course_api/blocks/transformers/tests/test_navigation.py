@@ -7,7 +7,6 @@ Tests for BlockNavigationTransformer.
 from unittest import TestCase
 
 import ddt
-import six
 
 from lms.djangoapps.course_api.blocks.transformers.block_depth import BlockDepthTransformer
 from lms.djangoapps.course_api.blocks.transformers.navigation import BlockNavigationTransformer

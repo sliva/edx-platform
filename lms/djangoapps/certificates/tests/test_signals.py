@@ -7,7 +7,6 @@ and disabling for instructor-paced courses.
 from unittest import mock
 
 import ddt
-import six
 from edx_toggles.toggles import LegacyWaffleSwitch
 from edx_toggles.toggles.testutils import override_waffle_flag, override_waffle_switch
 

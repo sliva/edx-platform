@@ -7,7 +7,6 @@ from itertools import product
 from unittest.mock import patch
 
 import ddt
-import six
 from django.test.client import RequestFactory
 from edx_toggles.toggles.testutils import override_waffle_switch
 

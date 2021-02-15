@@ -5,14 +5,13 @@ import json
 import logging
 
 import requests
-import six
 import waffle
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 from opaque_keys.edx.keys import CourseKey
-from six.moves.urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode, urljoin
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.models import CourseEnrollment  # lint-amnesty, pylint: disable=unused-import

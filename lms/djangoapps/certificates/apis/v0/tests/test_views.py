@@ -6,7 +6,6 @@ Tests for the Certificate REST APIs.
 from unittest.mock import patch
 
 import ddt
-import six
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone

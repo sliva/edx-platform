@@ -15,7 +15,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from opaque_keys.edx.keys import CourseKey
 from requests import Timeout
-from six.moves.urllib.parse import urljoin
+from urllib.parse import urljoin
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.signals import REFUND_ORDER

@@ -3,9 +3,8 @@ Course API Serializers.  Representing course catalog data
 """
 
 
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
+import urllib
+
 from django.urls import reverse
 from edx_django_utils import monitoring as monitoring_utils
 from rest_framework import serializers
@@ -132,7 +131,7 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
         """
         base_url = '?'.join([
             reverse('blocks_in_course'),
-            six.moves.urllib.parse.urlencode({'course_id': course_overview.id}),
+            urllib.parse.urlencode({'course_id': course_overview.id}),
         ])
         return self.context['request'].build_absolute_uri(base_url)
 

@@ -4,7 +4,6 @@
 import logging
 from itertools import groupby
 
-import six
 from django.db import transaction
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey

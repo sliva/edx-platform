@@ -17,7 +17,6 @@ from textwrap import dedent
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from opaque_keys.edx.keys import CourseKey
-from six import text_type
 
 from lms.djangoapps.certificates.models import CertificateStatuses, GeneratedCertificate
 

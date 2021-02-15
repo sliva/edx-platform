@@ -4,7 +4,6 @@ Signal handler for enabling/disabling self-generated certificates based on the c
 
 import logging
 
-import six
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 

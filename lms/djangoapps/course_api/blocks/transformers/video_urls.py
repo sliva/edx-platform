@@ -3,7 +3,6 @@ Video block URL Transformer
 """
 
 
-import six
 from django.conf import settings
 
 from openedx.core.djangoapps.content.block_structure.transformer import BlockStructureTransformer

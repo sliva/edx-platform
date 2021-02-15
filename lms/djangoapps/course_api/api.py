@@ -4,7 +4,6 @@ Course API
 import logging
 
 import search
-import six
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.urls import reverse

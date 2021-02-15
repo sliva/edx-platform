@@ -4,7 +4,6 @@ Certificates utilities
 
 import logging
 
-import six
 from django.conf import settings
 from django.urls import reverse
 from eventtracking import tracker

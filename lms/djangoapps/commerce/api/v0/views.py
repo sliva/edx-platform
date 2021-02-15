@@ -3,7 +3,6 @@
 
 import logging
 
-import six
 from django.urls import reverse
 from edx_rest_api_client import exceptions
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -13,7 +12,6 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import HTTP_406_NOT_ACCEPTABLE, HTTP_409_CONFLICT
 from rest_framework.views import APIView
-from six import text_type
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.entitlements.models import CourseEntitlement

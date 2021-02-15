@@ -3,7 +3,6 @@ CourseBlocks API views
 """
 
 
-import six
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import Http404
@@ -13,7 +12,6 @@ from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from six import text_type
 
 from openedx.core.lib.api.view_utils import DeveloperErrorViewMixin, view_auth_classes
 from xmodule.modulestore.django import modulestore

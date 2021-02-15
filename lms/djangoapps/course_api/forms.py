@@ -5,7 +5,6 @@ Course API forms
 
 from collections import namedtuple
 
-import six
 from django.core.exceptions import ValidationError
 from django.forms import CharField, Form
 from opaque_keys import InvalidKeyError

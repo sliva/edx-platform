@@ -5,7 +5,6 @@ Milestones Transformer
 
 import logging
 
-import six
 from django.conf import settings
 from edx_proctoring.api import get_attempt_status_summary
 from edx_proctoring.exceptions import ProctoredExamNotFoundException

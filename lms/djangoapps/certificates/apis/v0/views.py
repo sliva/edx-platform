@@ -4,7 +4,6 @@
 import logging
 
 import edx_api_doc_tools as apidocs
-import six
 from django.contrib.auth import get_user_model
 from edx_rest_framework_extensions import permissions
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication

@@ -4,7 +4,6 @@
 from datetime import datetime
 
 import pytz
-import six
 from django.utils.translation import ugettext as _
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey

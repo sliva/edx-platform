@@ -3,8 +3,6 @@ TODO
 """
 
 
-import six
-
 from openedx.core.djangoapps.content.block_structure.transformer import BlockStructureTransformer
 
 from .block_depth import BlockDepthTransformer

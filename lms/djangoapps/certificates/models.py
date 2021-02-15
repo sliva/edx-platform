@@ -51,7 +51,6 @@ import logging
 import os
 import uuid
 
-import six
 from config_models.models import ConfigurationModel
 from django.apps import apps
 from django.conf import settings
