@@ -14,7 +14,7 @@ from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.util.forms import ExtendedNullBooleanField
 
 
-class UsernameValidatorMixin(object):
+class UsernameValidatorMixin:
     """
     Mixin class for validating the username parameter.
     """
@@ -43,7 +43,7 @@ class CourseDetailGetForm(UsernameValidatorMixin, Form):
         try:
             return CourseKey.from_string(course_key_string)
         except InvalidKeyError:
-            raise ValidationError(u"'{}' is not a valid course key.".format(six.text_type(course_key_string)))  # lint-amnesty, pylint: disable=raise-missing-from
+            raise ValidationError("'{}' is not a valid course key.".format(str(course_key_string)))  # lint-amnesty, pylint: disable=raise-missing-from
 
 
 class CourseListGetForm(UsernameValidatorMixin, Form):
@@ -65,7 +65,7 @@ class CourseListGetForm(UsernameValidatorMixin, Form):
         """
         Return cleaned data, including additional filters.
         """
-        cleaned_data = super(CourseListGetForm, self).clean()  # lint-amnesty, pylint: disable=super-with-arguments
+        cleaned_data = super().clean()
 
         # create a filter for all supported filter fields
         filter_ = dict()

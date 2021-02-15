@@ -6,19 +6,19 @@ from itertools import product
 
 import ddt
 import six
-from six.moves.urllib.parse import urlencode
 from django.contrib.auth.models import AnonymousUser
 from django.http import QueryDict
+from six.moves.urllib.parse import urlencode
 
-from openedx.core.djangoapps.util.test_forms import FormTestMixin
 from common.djangoapps.student.tests.factories import UserFactory
+from openedx.core.djangoapps.util.test_forms import FormTestMixin
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 
 from ..forms import CourseDetailGetForm, CourseIdListGetForm, CourseListGetForm
 
 
-class UsernameTestMixin(object):
+class UsernameTestMixin:
     """
     Tests the username Form field.
     """
@@ -43,12 +43,12 @@ class TestCourseListGetForm(FormTestMixin, UsernameTestMixin, SharedModuleStoreT
 
     @classmethod
     def setUpClass(cls):
-        super(TestCourseListGetForm, cls).setUpClass()
+        super().setUpClass()
 
         cls.course = CourseFactory.create()
 
     def setUp(self):
-        super(TestCourseListGetForm, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         self.student = UserFactory.create()
         self.set_up_data(self.student)
@@ -105,12 +105,12 @@ class TestCourseIdListGetForm(FormTestMixin, UsernameTestMixin, SharedModuleStor
 
     @classmethod
     def setUpClass(cls):
-        super(TestCourseIdListGetForm, cls).setUpClass()
+        super().setUpClass()
 
         cls.course = CourseFactory.create()
 
     def setUp(self):
-        super(TestCourseIdListGetForm, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         self.student = UserFactory.create()
         self.set_up_data(self.student)
@@ -144,12 +144,12 @@ class TestCourseDetailGetForm(FormTestMixin, UsernameTestMixin, SharedModuleStor
 
     @classmethod
     def setUpClass(cls):
-        super(TestCourseDetailGetForm, cls).setUpClass()
+        super().setUpClass()
 
         cls.course = CourseFactory.create()
 
     def setUp(self):
-        super(TestCourseDetailGetForm, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         self.student = UserFactory.create()
         self.set_up_data(self.student)
@@ -162,7 +162,7 @@ class TestCourseDetailGetForm(FormTestMixin, UsernameTestMixin, SharedModuleStor
         self.form_data = QueryDict(
             urlencode({
                 'username': user.username,
-                'course_key': six.text_type(self.course.id),
+                'course_key': str(self.course.id),
             }),
             mutable=True,
         )
