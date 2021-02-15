@@ -1,3 +1,4 @@
+import pytest
 """Tests for disabling rate limiting. """
 
 
@@ -44,7 +45,7 @@ class DisableRateLimitTest(TestCase):
         # Since our fake throttle always rejects requests,
         # we should expect the request to be rejected.
         request = mock.Mock()
-        with self.assertRaises(Throttled):
+        with pytest.raises(Throttled):
             self.view.check_throttles(request)
 
     def test_disable_rate_limit(self):
