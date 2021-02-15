@@ -161,8 +161,8 @@ class OverrideFieldData(FieldData):
         """
         if cls.provider_classes is None:
             cls.provider_classes = tuple(
-                resolve_dotted(name) for name in
-                 settings.FIELD_OVERRIDE_PROVIDERS)
+                resolve_dotted(name) for name in settings.FIELD_OVERRIDE_PROVIDERS
+            )
 
         enabled_providers = cls._providers_for_course(course)
         if enabled_providers:

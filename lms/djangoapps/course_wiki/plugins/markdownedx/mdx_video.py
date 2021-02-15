@@ -257,7 +257,7 @@ class Yahoo(markdown.inlinepatterns.Pattern):  # lint-amnesty, pylint: disable=m
         param = etree.Element('param')
         param.set('name', 'flashVars')
         param.set('value', "id={}&vid={}".format(m.group('yahooid'),
-                                             m.group('yahoovid')))
+                                                 m.group('yahoovid')))
         obj.append(param)
         return obj
 

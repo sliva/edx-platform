@@ -86,11 +86,9 @@ class TestWordCloud(BaseTestXmodule):
         users_state = self._get_users_state()
 
         self.assertEqual(
-            ''.join({  # lint-amnesty, pylint: disable=consider-using-set-comprehension
-                        content['status']
-                        for _, content in users_state.items()
-                        }),
-            'success')
+            ''.join({content['status'] for _, content in users_state.items()}),
+            'success'
+        )
 
         # correct initial data:
         correct_initial_data = {
@@ -126,11 +124,9 @@ class TestWordCloud(BaseTestXmodule):
         users_state = self._post_words(input_words)
 
         self.assertEqual(
-            ''.join({  # lint-amnesty, pylint: disable=consider-using-set-comprehension
-                        content['status']
-                        for _, content in users_state.items()
-                        }),
-            'success')
+            ''.join({content['status'] for _, content in users_state.items()}),
+            'success'
+        )
 
         correct_state = {}
         for index, user in enumerate(self.users):
@@ -174,22 +170,18 @@ class TestWordCloud(BaseTestXmodule):
         users_state = self._get_users_state()
 
         self.assertEqual(
-            ''.join({  # lint-amnesty, pylint: disable=consider-using-set-comprehension
-                        content['status']
-                        for _, content in users_state.items()
-                        }),
-            'success')
+            ''.join({content['status'] for _, content in users_state.items()}),
+            'success'
+        )
 
         # 2.
         # Invcemental state per user.
         users_state_after_post = self._post_words(['word1', 'word2'])
 
         self.assertEqual(
-            ''.join({  # lint-amnesty, pylint: disable=consider-using-set-comprehension
-                        content['status']
-                        for _, content in users_state_after_post.items()
-                        }),
-            'success')
+            ''.join({content['status'] for _, content in users_state_after_post.items()}),
+            'success'
+        )
 
         # Final state after all posts.
         users_state_before_fail = self._get_users_state()
@@ -199,11 +191,9 @@ class TestWordCloud(BaseTestXmodule):
             ['word1', 'word2', 'word3'])
 
         self.assertEqual(
-            ''.join({  # lint-amnesty, pylint: disable=consider-using-set-comprehension
-                        content['status']
-                        for _, content in users_state_after_post.items()
-                        }),
-            'fail')
+            ''.join({content['status'] for _, content in users_state_after_post.items()}),
+            'fail'
+        )
 
         # 4.
         current_users_state = self._get_users_state()
@@ -216,11 +206,9 @@ class TestWordCloud(BaseTestXmodule):
         users_state = self._post_words(input_words)
 
         self.assertEqual(
-            ''.join({  # lint-amnesty, pylint: disable=consider-using-set-comprehension
-                        content['status']
-                        for _, content in users_state.items()
-                        }),
-            'success')
+            ''.join({content['status'] for _, content in users_state.items()}),
+            'success'
+        )
 
         for user in self.users:
             self.assertListEqual(
