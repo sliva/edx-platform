@@ -387,6 +387,18 @@ FEATURES = {
     ],
 
     # Turn off account locking if failed login attempts exceeds a limit
+    # .. toggle_name: FEATURES['ENABLE_MAX_FAILED_LOGIN_ATTEMPTS']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: True
+    # .. toggle_description: This feature will keep track of the number of failed login attempts on a given user's
+    #   email. If the number of consecutive failed login attempts - without a successful login at some point - reaches
+    #   a configurable threshold (default 6), then the account will be locked for a configurable amount of seconds
+    #   (30 minutes) which will prevent additional login attempts until this time period has passed. If a user
+    #   successfully logs in, all the counter which tracks the number of failed attempts will be reset back to 0. If
+    #   set to False then account locking will be disabled for failed login attempts.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2014-01-30
+    # .. toggle_tickets: https://github.com/edx/edx-platform/pull/2331
     'ENABLE_MAX_FAILED_LOGIN_ATTEMPTS': True,
 
     # Hide any Personally Identifiable Information from application logs
@@ -609,7 +621,15 @@ FEATURES = {
     # Enable LTI Provider feature.
     'ENABLE_LTI_PROVIDER': False,
 
-    # Show the language selector in the header
+    # .. toggle_name: FEATURES['SHOW_HEADER_LANGUAGE_SELECTOR']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: False
+    # .. toggle_description: When set to True, language selector will be visible in the header.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2017-05-25
+    # .. toggle_warnings: You should set the languages in the DarkLangConfig table to get this working. If you have
+    #   not set any languages in the DarkLangConfig table then the language selector will not be visible in the header.
+    # .. toggle_tickets: https://github.com/edx/edx-platform/pull/15133
     'SHOW_HEADER_LANGUAGE_SELECTOR': False,
 
     # At edX it's safe to assume that English transcripts are always available
@@ -617,7 +637,14 @@ FEATURES = {
     # The default value in {lms,cms}/envs/common.py and xmodule/tests/test_video.py should be consistent.
     'FALLBACK_TO_ENGLISH_TRANSCRIPTS': True,
 
-    # Show the language selector in the footer
+    # .. toggle_name: FEATURES['SHOW_FOOTER_LANGUAGE_SELECTOR']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: False
+    # .. toggle_description: When set to True, language selector will be visible in the footer.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2017-05-25
+    # .. toggle_warnings: LANGUAGE_COOKIE is required to use footer-language-selector, set it if it has not been set.
+    # .. toggle_tickets: https://github.com/edx/edx-platform/pull/15133
     'SHOW_FOOTER_LANGUAGE_SELECTOR': False,
 
     # .. toggle_name: FEATURES['ENABLE_CSMH_EXTENDED']
@@ -3018,6 +3045,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
+    'EXCEPTION_HANDLER': 'openedx.core.lib.request_utils.custom_exception_handler',
     'PAGE_SIZE': 10,
     'URL_FORMAT_OVERRIDE': None,
     'DEFAULT_THROTTLE_RATES': {
@@ -3384,7 +3412,20 @@ FILE_UPLOAD_STORAGE_BUCKET_NAME = 'SET-ME-PLEASE (ex. bucket-name)'
 FILE_UPLOAD_STORAGE_PREFIX = 'submissions_attachments'
 
 ##### ACCOUNT LOCKOUT DEFAULT PARAMETERS #####
+# .. setting_name: MAX_FAILED_LOGIN_ATTEMPTS_ALLOWED
+# .. setting_default: 6
+# .. setting_description: Specifies the maximum failed login attempts allowed to users. Once the user reaches this
+#   failure threshold then the account will be locked for a configurable amount of seconds (30 minutes) which will
+#   prevent additional login attempts until this time period has passed. This setting is related with
+#   MAX_FAILED_LOGIN_ATTEMPTS_LOCKOUT_PERIOD_SECS and only used when ENABLE_MAX_FAILED_LOGIN_ATTEMPTS is enabled.
 MAX_FAILED_LOGIN_ATTEMPTS_ALLOWED = 6
+
+# .. setting_name: MAX_FAILED_LOGIN_ATTEMPTS_LOCKOUT_PERIOD_SECS
+# .. setting_default: 30 * 60
+# .. setting_description: Specifies the lockout period in seconds for consecutive failed login attempts. Once the user
+#   reaches the threshold of the login failure, then the account will be locked for the given amount of seconds
+#   (30 minutes) which will prevent additional login attempts until this time period has passed. This setting is
+#   related with MAX_FAILED_LOGIN_ATTEMPTS_ALLOWED and only used when ENABLE_MAX_FAILED_LOGIN_ATTEMPTS is enabled.
 MAX_FAILED_LOGIN_ATTEMPTS_LOCKOUT_PERIOD_SECS = 30 * 60
 
 
@@ -4056,16 +4097,34 @@ PROGRAM_CERTIFICATES_ROUTING_KEY = 'edx.lms.core.default'
 # Default site to use if site matching request headers does not exist
 SITE_ID = 1
 
-# dir containing all themes
+# .. setting_name: COMPREHENSIVE_THEME_DIRS
+# .. setting_default: []
+# .. setting_description: A list of directories containing themes folders,
+#   each entry should be a full path to the directory containing the theme folder.
 COMPREHENSIVE_THEME_DIRS = []
 
-# Theme directory locale paths
+# .. setting_name: COMPREHENSIVE_THEME_LOCALE_PATHS
+# .. setting_default: []
+# .. setting_description: A list of the paths to themes locale directories e.g.
+#   "COMPREHENSIVE_THEME_LOCALE_PATHS" : ["/edx/src/edx-themes/conf/locale"].
 COMPREHENSIVE_THEME_LOCALE_PATHS = []
 
-# Theme to use when no site or site theme is defined,
-# set to None if you want to use openedx theme
+# .. setting_name: DEFAULT_SITE_THEME
+# .. setting_default: None
+# .. setting_description: Theme to use when no site or site theme is defined, for example
+#   "dark-theme". Set to None if you want to use openedx default theme.
+# .. setting_warning: The theme folder needs to be in 'edx-platform/themes' or define the path
+#   to the theme folder in COMPREHENSIVE_THEME_DIRS. To be effective, ENABLE_COMPREHENSIVE_THEMING
+#   has to be enabled.
 DEFAULT_SITE_THEME = None
 
+# .. toggle_name: ENABLE_COMPREHENSIVE_THEMING
+# .. toggle_implementation: DjangoSetting
+# .. toggle_default: False
+# .. toggle_description: When enabled, this toggle activates the use of the custom theme
+#   defined by DEFAULT_SITE_THEME.
+# .. toggle_use_cases: open_edx
+# .. toggle_creation_date: 2016-06-30
 ENABLE_COMPREHENSIVE_THEMING = False
 
 # API access management
