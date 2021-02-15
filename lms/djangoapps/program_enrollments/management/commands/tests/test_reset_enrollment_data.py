@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for the reset_enrollment_data management command.
 """
@@ -48,9 +49,9 @@ class TestResetEnrollmentData(TestCase):
         return program_enrollment
 
     def _validate_enrollments_count(self, n):
-        self.assertEqual(len(CourseEnrollment.objects.all()), n)
-        self.assertEqual(len(ProgramCourseEnrollment.objects.all()), n)
-        self.assertEqual(len(ProgramEnrollment.objects.all()), n)
+        assert len(CourseEnrollment.objects.all()) == n
+        assert len(ProgramCourseEnrollment.objects.all()) == n
+        assert len(ProgramEnrollment.objects.all()) == n
 
     def test_reset(self):
         """ Validate enrollments with a user and waiting enrollments without a user are removed """
@@ -74,7 +75,7 @@ class TestResetEnrollmentData(TestCase):
         """ Failing to confirm reset will result in no modifications """
         self._create_program_and_course_enrollment(self.program_uuid, self.user)
 
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             with self._replace_stdin('no'):
                 call_command(self.command, self.program_uuid)
 
@@ -94,7 +95,7 @@ class TestResetEnrollmentData(TestCase):
         program_enrollment = ProgramEnrollment.objects.get(program_uuid=alt_program_uuid)
         program_course_enrollment = ProgramCourseEnrollment.objects.get(program_enrollment=program_enrollment)
         course_enrollment = program_course_enrollment.course_enrollment
-        self.assertIsNotNone(course_enrollment)
+        assert course_enrollment is not None
 
         # other enrollments have been deleted
         self._validate_enrollments_count(1)
