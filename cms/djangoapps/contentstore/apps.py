@@ -18,3 +18,4 @@ class ContentstoreConfig(AppConfig):
         """
         Connect handlers to signals.
         """
+        from .signals import handlers  # pylint: disable=unused-import
