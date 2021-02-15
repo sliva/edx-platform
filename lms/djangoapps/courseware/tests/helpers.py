@@ -8,28 +8,24 @@ import json
 from collections import OrderedDict
 from datetime import timedelta
 
-import six
 from django.contrib import messages
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
 from django.urls import reverse
 from django.utils.timezone import now
-from six import text_type
-from six.moves import range
 from xblock.field_data import DictFieldData
 
 from common.djangoapps.edxmako.shortcuts import render_to_string
-from lms.djangoapps.courseware.access import has_access
-from lms.djangoapps.courseware.utils import verified_upgrade_deadline_link
-from lms.djangoapps.courseware.masquerade import MasqueradeView
-from lms.djangoapps.courseware.masquerade import setup_masquerade
-from lms.djangoapps.lms_xblock.field_data import LmsFieldData
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.lib.url_utils import quote_slashes
 from common.djangoapps.student.models import CourseEnrollment, Registration
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
 from common.djangoapps.util.date_utils import strftime_localized_html
+from lms.djangoapps.courseware.access import has_access
+from lms.djangoapps.courseware.masquerade import MasqueradeView, setup_masquerade
+from lms.djangoapps.courseware.utils import verified_upgrade_deadline_link
+from lms.djangoapps.lms_xblock.field_data import LmsFieldData
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.lib.url_utils import quote_slashes
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
@@ -94,7 +90,7 @@ class BaseTestXmodule(ModuleStoreTestCase):
 
         self.item_descriptor.xmodule_runtime = self.new_module_runtime()
 
-        self.item_url = six.text_type(self.item_descriptor.location)
+        self.item_url = str(self.item_descriptor.location)
 
     def setup_course(self):  # lint-amnesty, pylint: disable=missing-function-docstring
         self.course = CourseFactory.create(data=self.COURSE_DATA)
@@ -132,7 +128,7 @@ class BaseTestXmodule(ModuleStoreTestCase):
         self.assertTrue(all(self.login_statuses))
 
     def setUp(self):
-        super(BaseTestXmodule, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.setup_course()
         self.initialize_module(metadata=self.METADATA, data=self.DATA)
 
@@ -140,7 +136,7 @@ class BaseTestXmodule(ModuleStoreTestCase):
         """Return item url with dispatch."""
         return reverse(
             'xblock_handler',
-            args=(six.text_type(self.course.id), quote_slashes(self.item_url), 'xmodule_handler', dispatch)
+            args=(str(self.course.id), quote_slashes(self.item_url), 'xmodule_handler', dispatch)
         )
 
 
@@ -150,7 +146,7 @@ class XModuleRenderingTestBase(BaseTestXmodule):  # lint-amnesty, pylint: disabl
         """
         Create a runtime that actually does html rendering
         """
-        runtime = super(XModuleRenderingTestBase, self).new_module_runtime()  # lint-amnesty, pylint: disable=super-with-arguments
+        runtime = super().new_module_runtime()
         runtime.render_template = render_to_string
         return runtime
 
@@ -187,8 +183,8 @@ class LoginEnrollmentTestCase(TestCase):
         response = make_request(url, **kwargs)
         self.assertEqual(
             response.status_code, status_code,
-            u"{method} request to {url} returned status code {actual}, "
-            u"expected status code {expected}".format(
+            "{method} request to {url} returned status code {actual}, "
+            "expected status code {expected}".format(
                 method=method, url=url,
                 actual=response.status_code, expected=status_code
             )
@@ -264,7 +260,7 @@ class LoginEnrollmentTestCase(TestCase):
         """
         resp = self.client.post(reverse('change_enrollment'), {
             'enrollment_action': 'enroll',
-            'course_id': text_type(course.id),
+            'course_id': str(course.id),
             'check_access': True,
         })
         result = resp.status_code == 200
@@ -280,7 +276,7 @@ class LoginEnrollmentTestCase(TestCase):
         url = reverse('change_enrollment')
         request_data = {
             'enrollment_action': 'unenroll',
-            'course_id': text_type(course.id),
+            'course_id': str(course.id),
         }
         self.assert_request_status_code(200, url, method="POST", data=request_data)
 
@@ -394,7 +390,7 @@ def masquerade_as_group_member(user, course, partition_id, group_id):
         user,
         data={"role": "student", "user_partition_id": partition_id, "group_id": group_id}
     )
-    response = MasqueradeView.as_view()(request, six.text_type(course.id))
+    response = MasqueradeView.as_view()(request, str(course.id))
     setup_masquerade(request, course.id, True)
     return response.status_code
 
@@ -426,7 +422,7 @@ def get_expiration_banner_text(user, course, language='en'):  # lint-amnesty, py
     if upgrade_deadline:
         formatted_upgrade_deadline = strftime_localized_html(upgrade_deadline, 'SHORT_DATE')
 
-        bannerText = u'<strong>Audit Access Expires {expiration_date}</strong><br>\
+        bannerText = '<strong>Audit Access Expires {expiration_date}</strong><br>\
                      You lose all access to this course, including your progress, on {expiration_date}.\
                      <br>Upgrade by {upgrade_deadline} to get unlimited access to the course as long as it exists\
                      on the site. <a id="FBE_banner" href="{upgrade_link}">Upgrade now<span class="sr-only"> to retain access past\
@@ -436,7 +432,7 @@ def get_expiration_banner_text(user, course, language='en'):  # lint-amnesty, py
             upgrade_deadline=formatted_upgrade_deadline
         )
     else:
-        bannerText = u'<strong>Audit Access Expires {expiration_date}</strong><br>\
+        bannerText = '<strong>Audit Access Expires {expiration_date}</strong><br>\
                      You lose all access to this course, including your progress, on {expiration_date}.\
                      '.format(
             expiration_date=formatted_expiration_date

@@ -21,17 +21,14 @@ from web_fragments.fragment import Fragment
 from xblock.runtime import KeyValueStore
 
 from common.djangoapps.course_modes.models import CourseMode
-from openedx.core.djangoapps.util.user_messages import PageLevelMessages
-from openedx.core.djangolib.markup import HTML
-from openedx.features.content_type_gating.helpers import CONTENT_GATING_PARTITION_ID
-from openedx.features.content_type_gating.helpers import FULL_ACCESS
-from openedx.features.content_type_gating.helpers import LIMITED_ACCESS
 from common.djangoapps.student.models import CourseEnrollment
 from common.djangoapps.student.role_helpers import has_staff_roles
 from common.djangoapps.util.json_request import JsonResponse, expect_json
+from openedx.core.djangoapps.util.user_messages import PageLevelMessages
+from openedx.core.djangolib.markup import HTML
+from openedx.features.content_type_gating.helpers import CONTENT_GATING_PARTITION_ID, FULL_ACCESS, LIMITED_ACCESS
 from xmodule.modulestore.django import modulestore
-from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID
-from xmodule.partitions.partitions import NoSuchUserPartitionGroupError
+from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID, NoSuchUserPartitionGroupError
 from xmodule.partitions.partitions_service import get_all_partitions_for_course
 
 log = logging.getLogger(__name__)
@@ -45,7 +42,7 @@ MASQUERADE_SETTINGS_KEY = 'masquerade_settings'
 MASQUERADE_DATA_KEY = 'masquerade_data'
 
 
-class CourseMasquerade(object):
+class CourseMasquerade:
     """
     Masquerade settings for a particular course.
     """
@@ -181,7 +178,7 @@ class MasqueradeView(View):
                 return JsonResponse({
                     'success': False,
                     'error': _(
-                        u'There is no user with the username or email address "{user_identifier}" '
+                        'There is no user with the username or email address "{user_identifier}" '
                         'enrolled in this course.'
                     ).format(
                         user_identifier=user_name,
@@ -471,5 +468,5 @@ def filter_displayed_blocks(block, unused_view, frag, unused_context):  # lint-a
     if getattr(block, 'show_in_read_only_mode', False):
         return frag
     return Fragment(
-        _(u'This type of component cannot be shown while viewing the course as a specific student.')
+        _('This type of component cannot be shown while viewing the course as a specific student.')
     )

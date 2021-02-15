@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test the access control framework
 """
@@ -6,34 +5,20 @@ Test the access control framework
 
 import datetime
 import itertools
+from unittest.mock import Mock, patch
 
 import ddt
 import pytz
-import six
 from ccx_keys.locator import CCXLocator
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.urls import reverse
 from milestones.tests.utils import MilestonesTestCaseMixin
-from mock import Mock, patch
 from opaque_keys.edx.locator import CourseLocator
 
 import lms.djangoapps.courseware.access as access
 import lms.djangoapps.courseware.access_response as access_response
-from lms.djangoapps.courseware.masquerade import CourseMasquerade
-from lms.djangoapps.courseware.tests.factories import (
-    BetaTesterFactory,
-    GlobalStaffFactory,
-    InstructorFactory,
-    StaffFactory,
-    UserFactory
-)
-from lms.djangoapps.courseware.tests.helpers import LoginEnrollmentTestCase, masquerade_as_group_member
-from lms.djangoapps.ccx.models import CustomCourseForEdX
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.waffle_utils.testutils import WAFFLE_TABLES
-from openedx.features.content_type_gating.models import ContentTypeGatingConfig
 from common.djangoapps.student.models import CourseEnrollment
 from common.djangoapps.student.roles import CourseCcxCoachRole, CourseStaffRole
 from common.djangoapps.student.tests.factories import (
@@ -43,6 +28,19 @@ from common.djangoapps.student.tests.factories import (
     CourseEnrollmentFactory
 )
 from common.djangoapps.util.milestones_helpers import fulfill_course_milestone, set_prerequisite_courses
+from lms.djangoapps.ccx.models import CustomCourseForEdX
+from lms.djangoapps.courseware.masquerade import CourseMasquerade
+from lms.djangoapps.courseware.tests.factories import (
+    BetaTesterFactory,
+    GlobalStaffFactory,
+    InstructorFactory,
+    StaffFactory,
+    UserFactory
+)
+from lms.djangoapps.courseware.tests.helpers import LoginEnrollmentTestCase, masquerade_as_group_member
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.waffle_utils.testutils import WAFFLE_TABLES
+from openedx.features.content_type_gating.models import ContentTypeGatingConfig
 from xmodule.course_module import (
     CATALOG_VISIBILITY_ABOUT,
     CATALOG_VISIBILITY_CATALOG_AND_ABOUT,
@@ -74,14 +72,14 @@ class CoachAccessTestCaseCCX(SharedModuleStoreTestCase, LoginEnrollmentTestCase)
         """
         Set up course for tests
         """
-        super(CoachAccessTestCaseCCX, cls).setUpClass()
+        super().setUpClass()
         cls.course = CourseFactory.create()
 
     def setUp(self):
         """
         Set up tests
         """
-        super(CoachAccessTestCaseCCX, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         # Create ccx coach account
         self.coach = AdminFactory.create(password="test")
@@ -103,7 +101,7 @@ class CoachAccessTestCaseCCX(SharedModuleStoreTestCase, LoginEnrollmentTestCase)
         )
         ccx.save()
 
-        ccx_locator = CCXLocator.from_course_locator(self.course.id, six.text_type(ccx.id))
+        ccx_locator = CCXLocator.from_course_locator(self.course.id, str(ccx.id))
         role = CourseCcxCoachRole(ccx_locator)
         role.add_users(self.coach)
         CourseEnrollment.enroll(self.coach, ccx_locator)
@@ -150,12 +148,12 @@ class CoachAccessTestCaseCCX(SharedModuleStoreTestCase, LoginEnrollmentTestCase)
         CourseEnrollment.enroll(student, ccx_locator)
 
         # Test for access of a coach
-        resp = self.client.get(reverse('student_progress', args=[six.text_type(ccx_locator), student.id]))
+        resp = self.client.get(reverse('student_progress', args=[str(ccx_locator), student.id]))
         self.assertEqual(resp.status_code, 200)
 
         # Assert access of a student
         self.client.login(username=student.username, password='test')
-        resp = self.client.get(reverse('student_progress', args=[six.text_type(ccx_locator), self.coach.id]))
+        resp = self.client.get(reverse('student_progress', args=[str(ccx_locator), self.coach.id]))
         self.assertEqual(resp.status_code, 404)
 
 
@@ -174,7 +172,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
     }
 
     def setUp(self):
-        super(AccessTestCase, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.course = CourseFactory.create(org='edX', course='toy', run='test_run')
         self.anonymous_user = AnonymousUserFactory()
         self.beta_user = BetaTesterFactory(course_key=self.course.id)
@@ -597,7 +595,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
             org='test_org', number='788', run='test_run'
         )
 
-        pre_requisite_courses = [six.text_type(pre_requisite_course.id)]
+        pre_requisite_courses = [str(pre_requisite_course.id)]
         course = CourseFactory.create(
             org='test_org', number='786', run='test_run', pre_requisite_courses=pre_requisite_courses
         )
@@ -646,7 +644,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
             run='test_run',
         )
 
-        pre_requisite_courses = [six.text_type(pre_requisite_course.id)]
+        pre_requisite_courses = [str(pre_requisite_course.id)]
         course = CourseFactory.create(
             org='edX',
             course='1000',
@@ -662,7 +660,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
         self.login(user.email, test_password)
         CourseEnrollmentFactory(user=user, course_id=course.id)
 
-        url = reverse('courseware', args=[six.text_type(course.id)])
+        url = reverse('courseware', args=[str(course.id)])
         response = self.client.get(url)
         self.assertRedirects(
             response,
@@ -683,7 +681,7 @@ class UserRoleTestCase(TestCase):
     """
 
     def setUp(self):
-        super(UserRoleTestCase, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.course_key = CourseLocator('edX', 'toy', '2012_Fall')
         self.anonymous_user = AnonymousUserFactory()
         self.student = UserFactory()
@@ -741,7 +739,7 @@ class CourseOverviewAccessTestCase(ModuleStoreTestCase):
     """
 
     def setUp(self):
-        super(CourseOverviewAccessTestCase, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         today = datetime.datetime.now(pytz.UTC)
         last_week = today - datetime.timedelta(days=7)

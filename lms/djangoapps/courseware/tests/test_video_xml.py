@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # pylint: disable=protected-access
 
 """Test for Video Xmodule functional logic.
@@ -17,6 +16,7 @@ course, section, subsection, unit, etc.
 
 
 from django.test import TestCase
+
 from xmodule.video_module import VideoBlock
 
 SOURCE_XML = """

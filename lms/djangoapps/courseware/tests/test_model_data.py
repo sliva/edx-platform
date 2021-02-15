@@ -5,14 +5,15 @@ Test for lms courseware app, module data (runtime data storage for XBlocks)
 
 import json
 from functools import partial
+from unittest.mock import Mock, patch
 
-from django.db import connections, DatabaseError
+from django.db import DatabaseError, connections
 from django.test import TestCase
-from mock import Mock, patch
 from xblock.core import XBlock
 from xblock.exceptions import KeyValueMultiSaveError
 from xblock.fields import BlockScope, Scope, ScopeIds
 
+from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.courseware.model_data import DjangoKeyValueStore, FieldDataCache, InvalidScopeError
 from lms.djangoapps.courseware.models import (
     StudentModule,
@@ -23,7 +24,6 @@ from lms.djangoapps.courseware.models import (
 from lms.djangoapps.courseware.tests.factories import StudentInfoFactory
 from lms.djangoapps.courseware.tests.factories import StudentModuleFactory as cmfStudentModuleFactory
 from lms.djangoapps.courseware.tests.factories import StudentPrefsFactory, UserStateSummaryFactory, course_id, location
-from common.djangoapps.student.tests.factories import UserFactory
 
 
 def mock_field(scope, name):
@@ -58,7 +58,7 @@ class StudentModuleFactory(cmfStudentModuleFactory):
 
 class TestInvalidScopes(TestCase):  # lint-amnesty, pylint: disable=missing-class-docstring
     def setUp(self):
-        super(TestInvalidScopes, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.user = UserFactory.create(username='user')
         self.field_data_cache = FieldDataCache([mock_descriptor([mock_field(Scope.user_state, 'a_field')])], course_id, self.user)  # lint-amnesty, pylint: disable=line-too-long
         self.kvs = DjangoKeyValueStore(self.field_data_cache)
@@ -76,7 +76,7 @@ class TestInvalidScopes(TestCase):  # lint-amnesty, pylint: disable=missing-clas
             self.assertRaises(InvalidScopeError, self.kvs.set_many, {key: 'value'})
 
 
-class OtherUserFailureTestMixin(object):
+class OtherUserFailureTestMixin:
     """
     Mixin class to add test cases for failures when a user trying to use the kvs is not
     the one that instantiated the kvs.
@@ -108,7 +108,7 @@ class TestStudentModuleStorage(OtherUserFailureTestMixin, TestCase):
     databases = {alias for alias in connections}  # lint-amnesty, pylint: disable=unnecessary-comprehension
 
     def setUp(self):
-        super(TestStudentModuleStorage, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         student_module = StudentModuleFactory(state=json.dumps({'a_field': 'a_value', 'b_field': 'b_value'}))
         self.user = student_module.student
         self.assertEqual(self.user.id, 1)   # check our assumption hard-coded in the key functions above.
@@ -233,7 +233,7 @@ class TestMissingStudentModule(TestCase):  # lint-amnesty, pylint: disable=missi
     databases = {alias for alias in connections}  # lint-amnesty, pylint: disable=unnecessary-comprehension
 
     def setUp(self):
-        super(TestMissingStudentModule, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         self.user = UserFactory.create(username='user')
         self.assertEqual(self.user.id, 1)   # check our assumption hard-coded in the key functions above.
@@ -283,7 +283,7 @@ class TestMissingStudentModule(TestCase):  # lint-amnesty, pylint: disable=missi
             self.assertFalse(self.kvs.has(user_state_key('a_field')))
 
 
-class StorageTestBase(object):
+class StorageTestBase:
     """
     A base class for that gets subclassed when testing each of the scopes.
     """
