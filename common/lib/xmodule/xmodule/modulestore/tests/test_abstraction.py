@@ -1,3 +1,4 @@
+import pytest
 """
 Simple test to ensure that modulestore base classes remain abstract
 """
@@ -14,5 +15,6 @@ class AbstractionTest(TestCase):
     """
 
     def test_cant_instantiate_abstract_class(self):
-        self.assertRaises(TypeError, ModuleStoreRead)  # Cannot be instantiated due to explicit abstraction
-        self.assertRaises(TypeError, ModuleStoreWrite)
+        pytest.raises(TypeError, ModuleStoreRead)
+        # Cannot be instantiated due to explicit abstraction
+        pytest.raises(TypeError, ModuleStoreWrite)

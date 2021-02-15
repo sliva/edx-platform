@@ -1,3 +1,4 @@
+import pytest
 """ Test mako_module.py """
 
 
@@ -15,10 +16,10 @@ class MakoModuleTest(TestCase):
         mock_system = Mock()
         mock_system.render_template = None
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             MakoModuleDescriptor(mock_system, {})
 
         del mock_system.render_template
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             MakoModuleDescriptor(mock_system, {})

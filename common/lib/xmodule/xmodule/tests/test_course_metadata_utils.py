@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for course_metadata_utils.
 """
@@ -179,10 +180,10 @@ class CourseMetadataUtilsTestCase(TestCase):
         for function_test in function_tests:
             for scenario in function_test.scenarios:
                 actual_return = function_test.function(*scenario.arguments)
-                self.assertEqual(actual_return, scenario.expected_return)
+                assert actual_return == scenario.expected_return
 
         # Even though we don't care about testing mock_strftime_localized,
         # we still need to test it with a bad format string in order to
         # satisfy the coverage checker.
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             mock_strftime_localized(test_datetime, 'BAD_FORMAT_SPECIFIER')
