@@ -19,6 +19,7 @@ from path import Path as path
 from pytz import utc
 from six import text_type
 from xblock.fields import Boolean, Dict, Float, Integer, List, Scope, String
+
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # lint-amnesty, pylint: disable=unused-import
 from openedx.core.djangoapps.video_pipeline.models import VideoUploadsEnabledByDefault
 from openedx.core.lib.license import LicenseMixin
