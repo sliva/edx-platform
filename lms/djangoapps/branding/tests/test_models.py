@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for the Video Branding configuration.
 """
@@ -30,14 +31,14 @@ class BrandingInfoConfigTest(TestCase):
         Tests creation of configuration.
         """
         self.config.save()
-        self.assertEqual(self.config.configuration, self.configuration_string)
+        assert self.config.configuration == self.configuration_string
 
     def test_clean_bad_json(self):
         """
         Tests if bad Json string was given.
         """
         self.config = BrandingInfoConfig(configuration='{"bad":"test"')
-        self.assertRaises(ValidationError, self.config.clean)
+        pytest.raises(ValidationError, self.config.clean)
 
     def test_get(self):
         """
@@ -52,7 +53,7 @@ class BrandingInfoConfigTest(TestCase):
                 "logo_tag": "Video hosted by XuetangX.com"
             }
         }
-        self.assertEqual(self.config.get_config(), expected_config)
+        assert self.config.get_config() == expected_config
 
     def test_get_not_enabled(self):
         """
@@ -60,4 +61,4 @@ class BrandingInfoConfigTest(TestCase):
         """
         self.config.enabled = False
         self.config.save()
-        self.assertEqual(self.config.get_config(), {})
+        assert self.config.get_config() == {}
