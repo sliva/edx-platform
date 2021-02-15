@@ -1,3 +1,4 @@
+import pytest
 """  # lint-amnesty, pylint: disable=cyclic-import
 Tests for django admin commands in the verify_student module
 
@@ -50,11 +51,11 @@ class TestVerifyStudentCommand(TestCase):
         """
         Tests that the manual_verifications management command executes successfully
         """
-        self.assertEqual(ManualVerification.objects.filter(status='approved').count(), 0)
+        assert ManualVerification.objects.filter(status='approved').count() == 0
 
         call_command('manual_verifications', '--email-ids-file', self.tmp_file_path)
 
-        self.assertEqual(ManualVerification.objects.filter(status='approved').count(), 3)
+        assert ManualVerification.objects.filter(status='approved').count() == 3
 
     def test_manual_verifications_created_date(self):
         """
@@ -113,5 +114,5 @@ class TestVerifyStudentCommand(TestCase):
         """
         Verify command raises the CommandError for invalid file path.
         """
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command('manual_verifications', '--email-ids-file', u'invalid/email_id/file/path')

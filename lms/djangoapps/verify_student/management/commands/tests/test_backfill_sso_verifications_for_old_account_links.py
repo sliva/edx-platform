@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for management command backfill_sso_verifications_for_old_account_links
 """
@@ -33,18 +34,20 @@ class TestBackfillSSOVerificationsCommand(TestCase):
         self.user1 = self.user_social_auth1.user
 
     def test_fails_without_required_param(self):
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command('backfill_sso_verifications_for_old_account_links')
 
     def test_fails_without_named_provider_config(self):
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command('backfill_sso_verifications_for_old_account_links', '--provider-slug', 'gatech')
 
     def test_sso_updated_single_user(self):
-        self.assertTrue(SSOVerification.objects.count() == 0)  # lint-amnesty, pylint: disable=wrong-assert-type
+        assert (SSOVerification.objects.count() == 0)
+        # lint-amnesty, pylint: disable=wrong-assert-type
         call_command('backfill_sso_verifications_for_old_account_links', '--provider-slug', self.provider.provider_id)
-        self.assertTrue(SSOVerification.objects.count() > 0)  # lint-amnesty, pylint: disable=wrong-assert-type
-        self.assertEqual(SSOVerification.objects.get().user.id, self.user1.id)
+        assert (SSOVerification.objects.count() > 0)
+        # lint-amnesty, pylint: disable=wrong-assert-type
+        assert SSOVerification.objects.get().user.id == self.user1.id
 
     def test_performance(self):
         # TODO
@@ -55,7 +58,7 @@ class TestBackfillSSOVerificationsCommand(TestCase):
     def test_signal_called(self):
         with patch('openedx.core.djangoapps.signals.signals.LEARNER_NOW_VERIFIED.send_robust') as mock_signal:
             call_command('backfill_sso_verifications_for_old_account_links', '--provider-slug', self.provider.provider_id)  # lint-amnesty, pylint: disable=line-too-long
-        self.assertEqual(mock_signal.call_count, 1)
+        assert mock_signal.call_count == 1
 
     def test_fine_with_multiple_verification_records(self):
         """
@@ -69,6 +72,6 @@ class TestBackfillSSOVerificationsCommand(TestCase):
             status='approved',
             user=self.user1,
         )
-        self.assertEqual(SSOVerification.objects.count(), 2)
+        assert SSOVerification.objects.count() == 2
         call_command('backfill_sso_verifications_for_old_account_links', '--provider-slug', self.provider.provider_id)
-        self.assertEqual(SSOVerification.objects.count(), 2)
+        assert SSOVerification.objects.count() == 2
