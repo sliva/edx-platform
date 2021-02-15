@@ -7,9 +7,9 @@ import json
 import math
 import string
 from datetime import timedelta
+from unittest import mock
 
 import ddt
-import mock
 import six
 from ccx_keys.locator import CCXLocator
 from django.conf import settings
@@ -20,8 +20,10 @@ from oauth2_provider import models as dot_models
 from opaque_keys.edx.keys import CourseKey
 from rest_framework import status
 from rest_framework.test import APITestCase
-from six.moves import range, zip
 
+from common.djangoapps.student.models import CourseEnrollment
+from common.djangoapps.student.roles import CourseCcxCoachRole, CourseInstructorRole, CourseStaffRole
+from common.djangoapps.student.tests.factories import AdminFactory, UserFactory
 from lms.djangoapps.ccx.api.v0 import views
 from lms.djangoapps.ccx.models import CcxFieldOverride, CustomCourseForEdX
 from lms.djangoapps.ccx.overrides import override_field_for_ccx
@@ -30,9 +32,6 @@ from lms.djangoapps.ccx.utils import ccx_course as ccx_course_cm
 from lms.djangoapps.courseware import courses
 from lms.djangoapps.instructor.access import allow_access, list_with_level
 from lms.djangoapps.instructor.enrollment import enroll_email, get_email_params
-from common.djangoapps.student.models import CourseEnrollment
-from common.djangoapps.student.roles import CourseCcxCoachRole, CourseInstructorRole, CourseStaffRole
-from common.djangoapps.student.tests.factories import AdminFactory, UserFactory
 
 USER_PASSWORD = 'test'
 
@@ -43,16 +42,16 @@ class CcxRestApiTest(CcxTestCase, APITestCase):
     """
     @classmethod
     def setUpClass(cls):
-        super(CcxRestApiTest, cls).setUpClass()
+        super().setUpClass()
 
     def setUp(self):
         """
         Set up tests
         """
-        super(CcxRestApiTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         # add some info about the course for easy access
         self.master_course_key = self.course.location.course_key
-        self.master_course_key_str = six.text_type(self.master_course_key)
+        self.master_course_key_str = str(self.master_course_key)
         # OAUTH2 setup
         # create a specific user for the application
         self.app_user = app_user = UserFactory(
@@ -96,7 +95,7 @@ class CcxRestApiTest(CcxTestCase, APITestCase):
             token='16MGyP3OaQYHmpT1lK7Q6MMNAZsjwF'
         )
 
-        auth_header_oauth2_provider = u"Bearer {0}".format(auth_oauth2_provider)
+        auth_header_oauth2_provider = f"Bearer {auth_oauth2_provider}"
 
         return auth_header_oauth2_provider
 
@@ -118,7 +117,7 @@ class CcxRestApiTest(CcxTestCase, APITestCase):
         self.assertIn('field_errors', resp_obj.data)
         # restructure the error dictionary for a easier comparison
         resp_dict_error = {}
-        for field_name, error_dict in six.iteritems(resp_obj.data['field_errors']):
+        for field_name, error_dict in resp_obj.data['field_errors'].items():
             resp_dict_error[field_name] = error_dict.get('error_code', '')
         self.assertEqual(expected_field_errors, resp_dict_error)
 
@@ -132,17 +131,17 @@ class CcxListTest(CcxRestApiTest):
 
     @classmethod
     def setUpClass(cls):
-        super(CcxListTest, cls).setUpClass()
+        super().setUpClass()
 
     def setUp(self):
         """
         Set up tests
         """
-        super(CcxListTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.list_url = reverse('ccx_api:v0:ccx:list')
         self.list_url_master_course = six.moves.urllib.parse.urljoin(
             self.list_url,
-            '?master_course_id={0}'.format(six.moves.urllib.parse.quote_plus(self.master_course_key_str))
+            '?master_course_id={}'.format(six.moves.urllib.parse.quote_plus(self.master_course_key_str))
         )
 
     def test_authorization(self):
@@ -257,12 +256,12 @@ class CcxListTest(CcxRestApiTest):
             self.expect_error(status.HTTP_400_BAD_REQUEST, 'course_id_not_valid', resp)
 
             # case with invalid master_course_id
-            url = '{0}invalid_master_course_str'.format(base_url)
+            url = f'{base_url}invalid_master_course_str'
             resp = self.client.get(url, {}, HTTP_AUTHORIZATION=self.auth)
             self.expect_error(status.HTTP_400_BAD_REQUEST, 'course_id_not_valid', resp)
 
             # case with inexistent master_course_id
-            url = '{0}course-v1%3Aorg_foo.0%2Bcourse_bar_0%2BRun_0'.format(base_url)
+            url = f'{base_url}course-v1%3Aorg_foo.0%2Bcourse_bar_0%2BRun_0'
             resp = self.client.get(url, {}, HTTP_AUTHORIZATION=self.auth)
             self.expect_error(status.HTTP_404_NOT_FOUND, 'course_id_does_not_exist', resp)
 
@@ -298,13 +297,13 @@ class CcxListTest(CcxRestApiTest):
         all_ccx = CustomCourseForEdX.objects.all()
         all_ccx = all_ccx.order_by('id')
         self.assertEqual(len(all_ccx), num_ccx)
-        title_str = u'Title CCX {0}'
+        title_str = 'Title CCX {0}'
         for num, ccx in enumerate(all_ccx):
             ccx.display_name = title_str.format(string.ascii_lowercase[-(num + 1)])
             ccx.save()
 
         # sort by display name
-        url = '{0}&order_by=display_name'.format(self.list_url_master_course)
+        url = f'{self.list_url_master_course}&order_by=display_name'
         resp = self.client.get(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(resp.data['results']), num_ccx)
@@ -313,7 +312,7 @@ class CcxListTest(CcxRestApiTest):
             self.assertEqual(title_str.format(string.ascii_lowercase[-(num_ccx - num)]), ccx['display_name'])
 
         # add sort order desc
-        url = '{0}&order_by=display_name&sort_order=desc'.format(self.list_url_master_course)
+        url = f'{self.list_url_master_course}&order_by=display_name&sort_order=desc'
         resp = self.client.get(url, {}, HTTP_AUTHORIZATION=self.auth)
         # the only thing I can check is that the display name is in alphabetically reversed order
         # in the same way when the field has been updated above, so with the id asc
@@ -341,7 +340,7 @@ class CcxListTest(CcxRestApiTest):
         self.assertIsNone(resp.data['previous'])
 
         # get a page in the middle
-        url = '{0}&page=24'.format(self.list_url_master_course)
+        url = f'{self.list_url_master_course}&page=24'
         resp = self.client.get(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.data['count'], num_ccx)
@@ -352,7 +351,7 @@ class CcxListTest(CcxRestApiTest):
         self.assertIsNotNone(resp.data['previous'])
 
         # get last page
-        url = '{0}&page={1}'.format(self.list_url_master_course, num_pages)
+        url = f'{self.list_url_master_course}&page={num_pages}'
         resp = self.client.get(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.data['count'], num_ccx)
@@ -363,7 +362,7 @@ class CcxListTest(CcxRestApiTest):
         self.assertIsNotNone(resp.data['previous'])
 
         # last page + 1
-        url = '{0}&page={1}'.format(self.list_url_master_course, num_pages + 1)
+        url = '{}&page={}'.format(self.list_url_master_course, num_pages + 1)
         resp = self.client.get(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -583,14 +582,14 @@ class CcxListTest(CcxRestApiTest):
         resp = self.client.post(self.list_url, data, format='json', HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         # check if the response has at least the same data of the request
-        for key, val in six.iteritems(data):
+        for key, val in data.items():
             self.assertEqual(resp.data.get(key), val)
         self.assertIn('ccx_course_id', resp.data)
         # check that the new CCX actually exists
         course_key = CourseKey.from_string(resp.data.get('ccx_course_id'))
         ccx_course = CustomCourseForEdX.objects.get(pk=course_key.ccx)
         self.assertEqual(
-            six.text_type(CCXLocator.from_course_locator(ccx_course.course.id, ccx_course.id)),
+            str(CCXLocator.from_course_locator(ccx_course.course.id, ccx_course.id)),
             resp.data.get('ccx_course_id')
         )
         # check that the coach user has coach role on the master course
@@ -696,12 +695,12 @@ class CcxDetailTest(CcxRestApiTest):
         """
         Set up tests
         """
-        super(CcxDetailTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.make_coach()
         # create a ccx
         self.ccx = self.make_ccx(max_students_allowed=123)
         self.ccx_key = CCXLocator.from_course_locator(self.ccx.course.id, self.ccx.id)
-        self.ccx_key_str = six.text_type(self.ccx_key)
+        self.ccx_key_str = str(self.ccx_key)
         self.detail_url = reverse('ccx_api:v0:ccx:detail', kwargs={'ccx_course_id': self.ccx_key_str})
 
     def make_ccx(self, max_students_allowed=200):
@@ -709,7 +708,7 @@ class CcxDetailTest(CcxRestApiTest):
         Overridden method to replicate (part of) the actual
         creation of ccx courses
         """
-        ccx = super(CcxDetailTest, self).make_ccx(max_students_allowed=max_students_allowed)  # lint-amnesty, pylint: disable=super-with-arguments
+        ccx = super().make_ccx(max_students_allowed=max_students_allowed)
         ccx.structure_json = json.dumps(self.master_course_chapters)
         ccx.save()
 
@@ -828,7 +827,7 @@ class CcxDetailTest(CcxRestApiTest):
         that only an URL with a valid course id string can reach the detail view.
         """
         # get the base url from the valid one to build invalid urls
-        base_url = '{0}/'.format(self.detail_url.rsplit('/', 1)[0])
+        base_url = '{}/'.format(self.detail_url.rsplit('/', 1)[0])
         # this url should be the same of the ccx list view
         resolver = resolve(base_url)
         self.assertEqual(views.CCXListView.__name__, resolver.func.__name__)
@@ -836,13 +835,13 @@ class CcxDetailTest(CcxRestApiTest):
         # invalid urls
         for invalid_ccx_id in ('foo', 'ccx-v1:org.0', 'ccx-v1:org.0+course_0'):
             with self.assertRaises(Resolver404):
-                resolve('{0}{1}'.format(base_url, invalid_ccx_id))
+                resolve(f'{base_url}{invalid_ccx_id}')
         # the following course ID works even if it is not a CCX valid course id (the regex matches course ID strings)
-        resolver = resolve('{0}{1}'.format(base_url, 'ccx-v1:org.0+course_0+Run_0'))
+        resolver = resolve('{}{}'.format(base_url, 'ccx-v1:org.0+course_0+Run_0'))
         self.assertEqual(views.CCXDetailView.__name__, resolver.func.__name__)
         self.assertEqual(views.CCXDetailView.__module__, resolver.func.__module__)
         # and of course a valid ccx course id
-        resolver = resolve('{0}{1}'.format(base_url, self.ccx_key_str))
+        resolver = resolve(f'{base_url}{self.ccx_key_str}')
         self.assertEqual(views.CCXDetailView.__name__, resolver.func.__name__)
         self.assertEqual(views.CCXDetailView.__module__, resolver.func.__module__)
 
@@ -884,7 +883,7 @@ class CcxDetailTest(CcxRestApiTest):
             self.expect_error(status.HTTP_404_NOT_FOUND, 'ccx_course_id_does_not_exist', resp)
 
         # get a valid ccx key and add few 0s to get a non existing ccx for a valid course
-        ccx_key_str = '{0}000000'.format(self.ccx_key_str)
+        ccx_key_str = f'{self.ccx_key_str}000000'
         url = reverse('ccx_api:v0:ccx:detail', kwargs={'ccx_course_id': ccx_key_str})
         # the permission class will give a 403 error because will not find the CCX
         resp = client_request(url, {}, HTTP_AUTHORIZATION=self.auth)
@@ -909,8 +908,8 @@ class CcxDetailTest(CcxRestApiTest):
             self.ccx.max_student_enrollments_allowed
         )
         self.assertEqual(resp.data.get('coach_email'), self.ccx.coach.email)
-        self.assertEqual(resp.data.get('master_course_id'), six.text_type(self.ccx.course_id))
-        six.assertCountEqual(self, resp.data.get('course_modules'), self.master_course_chapters)
+        self.assertEqual(resp.data.get('master_course_id'), str(self.ccx.course_id))
+        self.assertCountEqual(resp.data.get('course_modules'), self.master_course_chapters)
 
     def test_delete_detail(self):
         """
@@ -1077,19 +1076,19 @@ class CcxDetailTest(CcxRestApiTest):
         resp = self.client.patch(self.detail_url, data, format='json', HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         ccx_from_db = CustomCourseForEdX.objects.get(id=self.ccx.id)
-        six.assertCountEqual(self, ccx_from_db.structure, data['course_modules'])
+        self.assertCountEqual(ccx_from_db.structure, data['course_modules'])
 
         data = {'course_modules': []}
         resp = self.client.patch(self.detail_url, data, format='json', HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         ccx_from_db = CustomCourseForEdX.objects.get(id=self.ccx.id)
-        six.assertCountEqual(self, ccx_from_db.structure, [])
+        self.assertCountEqual(ccx_from_db.structure, [])
 
         data = {'course_modules': self.master_course_chapters}
         resp = self.client.patch(self.detail_url, data, format='json', HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         ccx_from_db = CustomCourseForEdX.objects.get(id=self.ccx.id)
-        six.assertCountEqual(self, ccx_from_db.structure, self.master_course_chapters)
+        self.assertCountEqual(ccx_from_db.structure, self.master_course_chapters)
 
         data = {'course_modules': None}
         resp = self.client.patch(self.detail_url, data, format='json', HTTP_AUTHORIZATION=self.auth)
@@ -1102,7 +1101,7 @@ class CcxDetailTest(CcxRestApiTest):
         resp = self.client.patch(self.detail_url, data, format='json', HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         ccx_from_db = CustomCourseForEdX.objects.get(id=self.ccx.id)
-        six.assertCountEqual(self, ccx_from_db.structure, chapters)
+        self.assertCountEqual(ccx_from_db.structure, chapters)
 
     @ddt.data(
         True,
@@ -1123,7 +1122,7 @@ class CcxDetailTest(CcxRestApiTest):
         else:
             self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
             ccx_from_db = CustomCourseForEdX.objects.get(id=self.ccx.id)
-            six.assertCountEqual(self, ccx_from_db.structure, chapters)
+            self.assertCountEqual(ccx_from_db.structure, chapters)
 
     @ddt.data(
         True,

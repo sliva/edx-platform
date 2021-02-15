@@ -32,9 +32,9 @@ class CustomCourseForEdX(models.Model):
     coach = models.ForeignKey(User, db_index=True, on_delete=models.CASCADE)
     # if not empty, this field contains a json serialized list of
     # the master course modules
-    structure_json = models.TextField(verbose_name=u'Structure JSON', blank=True, null=True)
+    structure_json = models.TextField(verbose_name='Structure JSON', blank=True, null=True)
 
-    class Meta(object):
+    class Meta:
         app_label = 'ccx'
 
     @lazy
@@ -103,7 +103,7 @@ class CustomCourseForEdX(models.Model):
         Returns:
             The CCXLocator corresponding to this CCX.
         """
-        return CCXLocator.from_course_locator(self.course_id, six.text_type(self.id))
+        return CCXLocator.from_course_locator(self.course_id, str(self.id))
 
 
 class CcxFieldOverride(models.Model):
@@ -116,8 +116,8 @@ class CcxFieldOverride(models.Model):
     location = UsageKeyField(max_length=255, db_index=True)
     field = models.CharField(max_length=255)
 
-    class Meta(object):
+    class Meta:
         app_label = 'ccx'
         unique_together = (('ccx', 'location', 'field'),)
 
-    value = models.TextField(default=u'null')
+    value = models.TextField(default='null')
