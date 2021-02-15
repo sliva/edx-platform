@@ -242,7 +242,10 @@ class CourseDateSummaryTest(SharedModuleStoreTestCase):
         blocks = get_course_date_blocks(course, user, request, num_assignments=2)
         self.assertEqual(len(blocks), len(expected_blocks))
         self.assertEqual({type(b) for b in blocks}, set(expected_blocks))
-        assignment_blocks = filter(lambda b: isinstance(b, CourseAssignmentDate), blocks)
+        assignment_blocks = filter(  # lint-amnesty, pylint:disable=filter-builtin-not-iterating
+            lambda b: isinstance(b, CourseAssignmentDate),
+            blocks
+        )
         for assignment in assignment_blocks:
             assignment_title = str(assignment.title_html) or str(assignment.title)
             self.assertNotEqual(assignment_title, 'Third nearest assignment')
@@ -266,7 +269,10 @@ class CourseDateSummaryTest(SharedModuleStoreTestCase):
         blocks = get_course_date_blocks(course, user, request, include_past_dates=True)
         self.assertEqual(len(blocks), len(expected_blocks))
         self.assertEqual({type(b) for b in blocks}, set(expected_blocks))
-        assignment_blocks = filter(lambda b: isinstance(b, CourseAssignmentDate), blocks)
+        assignment_blocks = filter(  # lint-amnesty, pylint:disable=filter-builtin-not-iterating
+            lambda b: isinstance(b, CourseAssignmentDate),
+            blocks
+        )
         for assignment in assignment_blocks:
             assignment_title = str(assignment.title_html) or str(assignment.title)
             self.assertNotEqual(assignment_title, 'Not returned since we do not get non-graded subsections')

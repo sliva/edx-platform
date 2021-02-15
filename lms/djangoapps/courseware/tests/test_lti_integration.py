@@ -5,8 +5,8 @@ import json
 from collections import OrderedDict
 from unittest import mock
 
-import oauthlib
 import urllib
+import oauthlib
 from django.conf import settings
 from django.urls import reverse
 

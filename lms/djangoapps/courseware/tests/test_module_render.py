@@ -1469,7 +1469,8 @@ class TestGatedSubsectionRendering(SharedModuleStoreTestCase, MilestonesTestCase
             category='sequential',
             display_name="Gated Sequential"
         )
-        self.request = RequestFactoryNoCsrf().get('{}/{}/{}'.format('/courses', self.course.id, self.chapter.display_name))
+        self.request = RequestFactoryNoCsrf().get('{}/{}/{}'.format('/courses', self.course.id,
+                                                                    self.chapter.display_name))
         self.request.user = UserFactory()
         self.field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
             self.course.id, self.request.user, self.course, depth=2

@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from unittest.mock import MagicMock, PropertyMock, call, create_autospec, patch
 from uuid import uuid4
 
+from urllib.parse import quote, urlencode
 import ddt
 from completion.test_utils import CompletionWaffleTestMixin
 from crum import set_current_request
@@ -28,7 +29,6 @@ from milestones.tests.utils import MilestonesTestCaseMixin
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locator import BlockUsageLocator, CourseLocator
 from pytz import UTC, utc
-from urllib.parse import quote, urlencode
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
 from xblock.fields import Scope, String

@@ -5,10 +5,10 @@ Tests for Django management commands
 
 import json
 
+from io import StringIO
 import factory
 from django.conf import settings
 from django.core.management import call_command
-from io import StringIO
 
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore

@@ -8,9 +8,9 @@ import logging
 from collections import OrderedDict, namedtuple
 from datetime import datetime
 
+import urllib
 import bleach
 import requests
-import urllib
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required

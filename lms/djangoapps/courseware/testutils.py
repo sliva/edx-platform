@@ -7,8 +7,8 @@ from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-import ddt
 from urllib.parse import urlencode
+import ddt
 
 from common.djangoapps.student.tests.factories import AdminFactory, CourseEnrollmentFactory, UserFactory
 from lms.djangoapps.courseware.field_overrides import OverrideModulestoreFieldData
