@@ -81,8 +81,7 @@ from lms.djangoapps.courseware.models import BaseStudentModuleHistory, StudentMo
 from lms.djangoapps.courseware.permissions import (  # lint-amnesty, pylint: disable=unused-import
     MASQUERADE_AS_STUDENT,
     VIEW_COURSE_HOME,
-    VIEW_COURSEWARE,
-    VIEW_XQA_INTERFACE
+    VIEW_COURSEWARE
 )
 from lms.djangoapps.courseware.url_helpers import get_redirect_url
 from lms.djangoapps.courseware.user_state_client import DjangoXBlockUserStateClient
@@ -99,7 +98,7 @@ from openedx.core.djangoapps.credit.api import (
     is_credit_course,
     is_user_eligible_for_credit
 )
-from openedx.core.djangoapps.enrollments.api import add_enrollment, get_enrollment  # lint-amnesty, pylint: disable=unused-import
+from openedx.core.djangoapps.enrollments.api import add_enrollment  # lint-amnesty, pylint: disable=unused-import
 from openedx.core.djangoapps.enrollments.permissions import ENROLL_IN_COURSE
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
