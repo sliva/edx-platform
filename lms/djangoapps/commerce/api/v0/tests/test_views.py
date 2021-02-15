@@ -4,10 +4,10 @@
 import itertools
 import json
 from datetime import datetime, timedelta
+from unittest import mock
 from uuid import uuid4
 
 import ddt
-import mock
 import pytz
 import six
 from django.conf import settings
@@ -17,11 +17,11 @@ from django.urls import reverse, reverse_lazy
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.course_modes.tests.factories import CourseModeFactory
+from common.djangoapps.student.models import CourseEnrollment
+from common.djangoapps.student.tests.tests import EnrollmentEventTestMixin
 from openedx.core.djangoapps.embargo.test_utils import restrict_course
 from openedx.core.djangoapps.enrollments.api import get_enrollment
 from openedx.core.lib.django_test_client_utils import get_absolute_url
-from common.djangoapps.student.models import CourseEnrollment
-from common.djangoapps.student.tests.tests import EnrollmentEventTestMixin
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
@@ -53,7 +53,7 @@ class BasketsViewTests(EnrollmentEventTestMixin, UserMixin, ModuleStoreTestCase)
         :return: Response
         """
         payload = {
-            "course_id": six.text_type(course_id or self.course.id)
+            "course_id": str(course_id or self.course.id)
         }
         if marketing_email_opt_in:
             payload["email_opt_in"] = True
@@ -69,7 +69,7 @@ class BasketsViewTests(EnrollmentEventTestMixin, UserMixin, ModuleStoreTestCase)
         self.assertEqual(actual, expected_msg)
 
     def setUp(self):
-        super(BasketsViewTests, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.url = reverse('commerce_api:v0:baskets:create')
         self._login()
 
@@ -78,13 +78,13 @@ class BasketsViewTests(EnrollmentEventTestMixin, UserMixin, ModuleStoreTestCase)
         # TODO Verify this is the best method to create CourseMode objects.
         # TODO Find/create constants for the modes.
         for mode in [CourseMode.HONOR, CourseMode.VERIFIED, CourseMode.AUDIT]:
-            sku_string = six.text_type(uuid4().hex)
+            sku_string = str(uuid4().hex)
             CourseModeFactory.create(
                 course_id=self.course.id,
                 mode_slug=mode,
                 mode_display_name=mode,
                 sku=sku_string,
-                bulk_sku='BULK-{}'.format(sku_string)
+                bulk_sku=f'BULK-{sku_string}'
             )
 
         # Ignore events fired from UserFactory creation
@@ -200,9 +200,9 @@ class BasketsViewTests(EnrollmentEventTestMixin, UserMixin, ModuleStoreTestCase)
 
         CourseMode.objects.filter(course_id=self.course.id).delete()
         mode = CourseMode.NO_ID_PROFESSIONAL_MODE
-        sku_string = six.text_type(uuid4().hex)
+        sku_string = str(uuid4().hex)
         CourseModeFactory.create(course_id=self.course.id, mode_slug=mode, mode_display_name=mode,
-                                 sku=sku_string, bulk_sku='BULK-{}'.format(sku_string))
+                                 sku=sku_string, bulk_sku=f'BULK-{sku_string}')
         response = self._post_to_view()
 
         # The view should return an error status code
@@ -252,7 +252,7 @@ class BasketsViewTests(EnrollmentEventTestMixin, UserMixin, ModuleStoreTestCase)
         CourseEnrollment.enroll(self.user, self.course.id)
         CourseEnrollment.unenroll(self.user, self.course.id, True)
         self.assertFalse(CourseEnrollment.is_enrolled(self.user, self.course.id))
-        self.assertIsNotNone(get_enrollment(self.user.username, six.text_type(self.course.id)))
+        self.assertIsNotNone(get_enrollment(self.user.username, str(self.course.id)))
 
     @mock.patch('lms.djangoapps.commerce.api.v0.views.update_email_opt_in')
     @ddt.data(*itertools.product((False, True), (False, True), (False, True)))
@@ -290,7 +290,7 @@ class BasketOrderViewTests(UserMixin, TestCase):
     path = reverse_lazy(view_name, kwargs={'basket_id': 1})
 
     def setUp(self):
-        super(BasketOrderViewTests, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self._login()
 
     def test_order_found(self):
