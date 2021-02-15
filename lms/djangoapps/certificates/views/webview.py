@@ -67,7 +67,7 @@ def get_certificate_description(mode, certificate_type, platform_name):
                                          "learner has agreed to abide by the honor code established by "
                                          "{platform_name} and has completed all of the required tasks for this course "
                                          "under its guidelines.").format(cert_type=certificate_type,
-                                                                          platform_name=platform_name)
+                                                                         platform_name=platform_name)
     elif mode == 'verified':
         # Translators:  This text describes the 'ID Verified' course certificate type, which is a higher level of
         # verification offered by edX.  This type of verification is useful for professional education/certifications
@@ -77,7 +77,7 @@ def get_certificate_description(mode, certificate_type, platform_name):
                                          "under its guidelines. A {cert_type} certificate also indicates that the "
                                          "identity of the learner has been checked and "
                                          "is valid.").format(cert_type=certificate_type,
-                                                              platform_name=platform_name)
+                                                             platform_name=platform_name)
     elif mode == 'xseries':
         # Translators:  This text describes the 'XSeries' course certificate type.  An XSeries is a collection of
         # courses related to each other in a meaningful way, such as a specific topic or theme, or even an organization
