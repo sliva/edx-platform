@@ -7,10 +7,10 @@ See lms/djangoapps/support for more details.
 
 
 import logging
+import urllib
 from functools import wraps
 
 import bleach
-import urllib
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError

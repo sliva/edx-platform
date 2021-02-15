@@ -3,6 +3,7 @@
 
 import json
 from unittest.mock import patch
+from urllib.parse import urlencode
 
 import ddt
 import httpretty
@@ -11,7 +12,6 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from opaque_keys.edx.locator import CourseLocator
-from urllib.parse import urlencode
 from waffle.testutils import override_switch
 
 from common.djangoapps.course_modes.models import CourseMode

@@ -3,11 +3,11 @@ Test the create_orders_for_old_enterprise_course_enrollment management command
 """
 
 import re
+from io import StringIO
 from unittest.mock import patch
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings
-from io import StringIO
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory

@@ -3,11 +3,11 @@ Tests for Course API forms.
 """
 
 from itertools import product
+from urllib.parse import urlencode
 
 import ddt
 from django.contrib.auth.models import AnonymousUser
 from django.http import QueryDict
-from urllib.parse import urlencode
 
 from common.djangoapps.student.tests.factories import UserFactory
 from openedx.core.djangoapps.util.test_forms import FormTestMixin

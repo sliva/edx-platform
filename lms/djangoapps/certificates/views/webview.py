@@ -4,11 +4,11 @@ Certificate HTML webview.
 
 
 import logging
+import urllib
 from datetime import datetime
 from uuid import uuid4
 
 import pytz
-import urllib
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse

@@ -3,11 +3,12 @@ Tests for Course Blocks forms
 """
 
 
+from urllib.parse import urlencode
+
 import ddt
 from django.http import Http404, QueryDict
 from opaque_keys.edx.locator import CourseLocator
 from rest_framework.exceptions import PermissionDenied
-from urllib.parse import urlencode
 
 from common.djangoapps.student.models import CourseEnrollment
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
