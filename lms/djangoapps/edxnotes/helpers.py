@@ -10,7 +10,6 @@ from json import JSONEncoder
 from uuid import uuid4
 
 import requests
-import six
 from dateutil.parser import parse as dateutil_parse
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured

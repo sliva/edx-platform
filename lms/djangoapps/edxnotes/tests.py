@@ -11,7 +11,6 @@ from unittest.mock import MagicMock, patch
 
 import ddt
 import jwt
-import six
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
@@ -19,7 +18,6 @@ from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.urls import reverse
 from oauth2_provider.models import Application
-from six import text_type
 from six.moves.urllib.parse import parse_qs, urlparse
 
 from common.djangoapps.edxmako.shortcuts import render_to_string

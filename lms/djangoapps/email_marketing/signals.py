@@ -14,7 +14,6 @@ from django.conf import settings
 from django.dispatch import receiver
 from edx_toggles.toggles import LegacyWaffleSwitchNamespace
 from sailthru.sailthru_error import SailthruClientError
-from six import text_type
 
 from common.djangoapps import third_party_auth
 from common.djangoapps.course_modes.models import CourseMode

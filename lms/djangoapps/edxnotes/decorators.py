@@ -5,7 +5,6 @@ Decorators related to edXNotes.
 
 import json
 
-import six
 from django.conf import settings
 
 from common.djangoapps.edxmako.shortcuts import render_to_string

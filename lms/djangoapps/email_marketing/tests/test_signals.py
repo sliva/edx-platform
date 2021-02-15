@@ -6,7 +6,6 @@ import logging
 from unittest.mock import ANY, Mock, patch
 
 import ddt
-import six
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sites.models import Site
@@ -120,7 +119,7 @@ class EmailMarketingTests(TestCase):
                     'Started at {start} and ended at {end}, time spent:{delta} milliseconds'.format(
                         start=datetime.datetime.now().isoformat(' '),
                         end=datetime.datetime.now().isoformat(' '),
-                        delta=0 if six.PY2 else 0.0)
+                        delta=0.0)
                  ),
                 (LOGGER_NAME, 'INFO',
                     'sailthru_hid cookie:{cookies[cookie]} successfully retrieved for user {user}'.format(

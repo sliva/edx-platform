@@ -6,7 +6,6 @@ Utilities to facilitate experimentation
 import logging
 from decimal import Decimal
 
-import six
 from django.utils.timezone import now
 from edx_toggles.toggles import LegacyWaffleFlag, LegacyWaffleFlagNamespace
 from opaque_keys import InvalidKeyError
@@ -111,12 +110,12 @@ def check_and_get_upgrade_link_and_date(user, enrollment=None, course=None):
             logger.warning('{} refers to a different user than {} which was supplied. '
                            'Enrollment user id={}, repr={!r}. '
                            'User id={}, repr={!r}.'.format(enrollment,
-                                                            user,
-                                                            enrollment.user_id,
-                                                            enrollment.user_id,
-                                                            user.id,
-                                                            user.id,
-                                                            )
+                                                           user,
+                                                           enrollment.user_id,
+                                                           enrollment.user_id,
+                                                           user.id,
+                                                           user.id,
+                                                           )
                            )
             return (None, None, None)
 

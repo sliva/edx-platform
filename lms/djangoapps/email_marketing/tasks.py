@@ -7,7 +7,6 @@ import logging
 import time
 from datetime import datetime, timedelta
 
-import six
 from celery import shared_task
 from django.conf import settings
 from django.core.cache import cache

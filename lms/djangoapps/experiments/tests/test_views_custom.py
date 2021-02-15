@@ -6,7 +6,6 @@ Tests for experimentation views
 from datetime import timedelta
 from uuid import uuid4
 
-import six
 from django.urls import reverse
 from django.utils.timezone import now
 from edx_toggles.toggles.testutils import override_waffle_flag

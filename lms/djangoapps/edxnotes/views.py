@@ -16,7 +16,6 @@ from opaque_keys.edx.keys import CourseKey
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from six import text_type
 
 from common.djangoapps.edxmako.shortcuts import render_to_response
 from common.djangoapps.util.json_request import JsonResponse, JsonResponseBadRequest
