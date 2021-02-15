@@ -7,38 +7,39 @@ import json
 from contextlib import contextmanager
 from datetime import datetime
 from unittest import skipUnless
+from unittest.mock import MagicMock, patch
 
 import ddt
 import jwt
 import six
-from six import text_type
-from six.moves.urllib.parse import urlparse, parse_qs
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.urls import reverse
-from mock import MagicMock, patch
 from oauth2_provider.models import Application
+from six import text_type
+from six.moves.urllib.parse import parse_qs, urlparse
 
+from common.djangoapps.edxmako.shortcuts import render_to_string
+from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, SuperuserFactory, UserFactory
 from lms.djangoapps.courseware.model_data import FieldDataCache
 from lms.djangoapps.courseware.module_render import get_module_for_descriptor
 from lms.djangoapps.courseware.tabs import get_course_tab_list
-from common.djangoapps.edxmako.shortcuts import render_to_string
+from openedx.core.djangoapps.oauth_dispatch.jwt import create_jwt_for_user
+from openedx.core.djangoapps.oauth_dispatch.tests.factories import ApplicationFactory
+from openedx.core.djangoapps.user_api.models import RetirementState, UserRetirementStatus
+from xmodule.modulestore import ModuleStoreEnum
+from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
+from xmodule.tabs import CourseTab
+
 from . import helpers
 from .decorators import edxnotes
 from .exceptions import EdxNotesParseError, EdxNotesServiceUnavailable
 from .plugins import EdxNotesTab
-from openedx.core.djangoapps.oauth_dispatch.jwt import create_jwt_for_user  # lint-amnesty, pylint: disable=wrong-import-order
-from openedx.core.djangoapps.oauth_dispatch.tests.factories import ApplicationFactory  # lint-amnesty, pylint: disable=wrong-import-order
-from openedx.core.djangoapps.user_api.models import RetirementState, UserRetirementStatus  # lint-amnesty, pylint: disable=wrong-import-order
-from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, SuperuserFactory, UserFactory  # lint-amnesty, pylint: disable=wrong-import-order
-from xmodule.modulestore import ModuleStoreEnum  # lint-amnesty, pylint: disable=wrong-import-order
-from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=wrong-import-order
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=wrong-import-order
-from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory  # lint-amnesty, pylint: disable=wrong-import-order
-from xmodule.tabs import CourseTab  # lint-amnesty, pylint: disable=wrong-import-order
 
 FEATURES = settings.FEATURES.copy()
 
@@ -72,7 +73,7 @@ def enable_edxnotes_for_the_course(course, user_id):
 
 
 @edxnotes
-class TestProblem(object):
+class TestProblem:
     """
     Test class (fake problem) decorated by edxnotes decorator.
 
@@ -100,7 +101,7 @@ class EdxNotesDecoratorTest(ModuleStoreTestCase):
     """
 
     def setUp(self):
-        super(EdxNotesDecoratorTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         ApplicationFactory(name="edx-notes")
         # Using old mongo because of locator comparison issues (see longer
@@ -205,7 +206,7 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         """
         Setup a dummy course content.
         """
-        super(EdxNotesHelpersTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         # There are many tests that are comparing locators as returned from helper methods. When using
         # the split modulestore, some of those locators have version and branch information, but the
@@ -327,23 +328,22 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
                 "num_pages": 1,
                 "rows": [
                     {
-                        u"quote": u"quote text",
-                        u"text": u"text",
-                        u"usage_id": text_type(self.html_module_1.location),
-                        u"updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat(),
+                        "quote": "quote text",
+                        "text": "text",
+                        "usage_id": str(self.html_module_1.location),
+                        "updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat(),
                     },
                     {
-                        u"quote": u"quote text",
-                        u"text": u"text",
-                        u"usage_id": text_type(self.html_module_2.location),
-                        u"updated": datetime(2014, 11, 19, 8, 6, 16, 00000).isoformat(),
+                        "quote": "quote text",
+                        "text": "text",
+                        "usage_id": str(self.html_module_2.location),
+                        "updated": datetime(2014, 11, 19, 8, 6, 16, 00000).isoformat(),
                     }
                 ]
             }
         ).encode('utf-8')
 
-        six.assertCountEqual(
-            self,
+        self.assertCountEqual(
             {
                 "count": 2,
                 "current_page": 1,
@@ -353,52 +353,52 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
                 "num_pages": 1,
                 "results": [
                     {
-                        u"quote": u"quote text",
-                        u"text": u"text",
-                        u"chapter": {
-                            u"display_name": self.chapter.display_name_with_default,
-                            u"index": 0,
-                            u"location": text_type(self.chapter.location),
-                            u"children": [text_type(self.sequential.location)]
+                        "quote": "quote text",
+                        "text": "text",
+                        "chapter": {
+                            "display_name": self.chapter.display_name_with_default,
+                            "index": 0,
+                            "location": str(self.chapter.location),
+                            "children": [str(self.sequential.location)]
                         },
-                        u"section": {
-                            u"display_name": self.sequential.display_name_with_default,
-                            u"location": text_type(self.sequential.location),
-                            u"children": [
-                                text_type(self.vertical.location), text_type(self.vertical_with_container.location)
+                        "section": {
+                            "display_name": self.sequential.display_name_with_default,
+                            "location": str(self.sequential.location),
+                            "children": [
+                                str(self.vertical.location), str(self.vertical_with_container.location)
                             ]
                         },
-                        u"unit": {
-                            u"url": self._get_unit_url(self.course, self.chapter, self.sequential),
-                            u"display_name": self.vertical.display_name_with_default,
-                            u"location": text_type(self.vertical.location),
+                        "unit": {
+                            "url": self._get_unit_url(self.course, self.chapter, self.sequential),
+                            "display_name": self.vertical.display_name_with_default,
+                            "location": str(self.vertical.location),
                         },
-                        u"usage_id": text_type(self.html_module_2.location),
-                        u"updated": "Nov 19, 2014 at 08:06 UTC",
+                        "usage_id": str(self.html_module_2.location),
+                        "updated": "Nov 19, 2014 at 08:06 UTC",
                     },
                     {
-                        u"quote": u"quote text",
-                        u"text": u"text",
-                        u"chapter": {
-                            u"display_name": self.chapter.display_name_with_default,
-                            u"index": 0,
-                            u"location": text_type(self.chapter.location),
-                            u"children": [text_type(self.sequential.location)]
+                        "quote": "quote text",
+                        "text": "text",
+                        "chapter": {
+                            "display_name": self.chapter.display_name_with_default,
+                            "index": 0,
+                            "location": str(self.chapter.location),
+                            "children": [str(self.sequential.location)]
                         },
-                        u"section": {
-                            u"display_name": self.sequential.display_name_with_default,
-                            u"location": text_type(self.sequential.location),
-                            u"children": [
-                                text_type(self.vertical.location),
-                                text_type(self.vertical_with_container.location)]
+                        "section": {
+                            "display_name": self.sequential.display_name_with_default,
+                            "location": str(self.sequential.location),
+                            "children": [
+                                str(self.vertical.location),
+                                str(self.vertical_with_container.location)]
                         },
-                        u"unit": {
-                            u"url": self._get_unit_url(self.course, self.chapter, self.sequential),
-                            u"display_name": self.vertical.display_name_with_default,
-                            u"location": text_type(self.vertical.location),
+                        "unit": {
+                            "url": self._get_unit_url(self.course, self.chapter, self.sequential),
+                            "display_name": self.vertical.display_name_with_default,
+                            "location": str(self.vertical.location),
                         },
-                        u"usage_id": text_type(self.html_module_1.location),
-                        u"updated": "Nov 19, 2014 at 08:05 UTC",
+                        "usage_id": str(self.html_module_1.location),
+                        "updated": "Nov 19, 2014 at 08:05 UTC",
                     },
                 ]
             },
@@ -435,22 +435,21 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
             "num_pages": 1,
             "rows": [
                 {
-                    u"quote": u"quote text",
-                    u"text": u"text",
-                    u"usage_id": text_type(self.html_module_1.location),
-                    u"updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat(),
+                    "quote": "quote text",
+                    "text": "text",
+                    "usage_id": str(self.html_module_1.location),
+                    "updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat(),
                 },
                 {
-                    u"quote": u"quote text",
-                    u"text": u"text",
-                    u"usage_id": text_type(self.html_module_2.location),
-                    u"updated": datetime(2014, 11, 19, 8, 6, 16, 00000).isoformat(),
+                    "quote": "quote text",
+                    "text": "text",
+                    "usage_id": str(self.html_module_2.location),
+                    "updated": datetime(2014, 11, 19, 8, 6, 16, 00000).isoformat(),
                 }
             ]
         }).encode('utf-8')
 
-        six.assertCountEqual(
-            self,
+        self.assertCountEqual(
             {
                 "count": 2,
                 "current_page": 1,
@@ -460,52 +459,52 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
                 "num_pages": 1,
                 "results": [
                     {
-                        u"quote": u"quote text",
-                        u"text": u"text",
-                        u"chapter": {
-                            u"display_name": self.chapter.display_name_with_default,
-                            u"index": 0,
-                            u"location": text_type(self.chapter.location),
-                            u"children": [text_type(self.sequential.location)]
+                        "quote": "quote text",
+                        "text": "text",
+                        "chapter": {
+                            "display_name": self.chapter.display_name_with_default,
+                            "index": 0,
+                            "location": str(self.chapter.location),
+                            "children": [str(self.sequential.location)]
                         },
-                        u"section": {
-                            u"display_name": self.sequential.display_name_with_default,
-                            u"location": text_type(self.sequential.location),
-                            u"children": [
-                                text_type(self.vertical.location),
-                                text_type(self.vertical_with_container.location)]
+                        "section": {
+                            "display_name": self.sequential.display_name_with_default,
+                            "location": str(self.sequential.location),
+                            "children": [
+                                str(self.vertical.location),
+                                str(self.vertical_with_container.location)]
                         },
-                        u"unit": {
-                            u"url": self._get_unit_url(self.course, self.chapter, self.sequential),
-                            u"display_name": self.vertical.display_name_with_default,
-                            u"location": text_type(self.vertical.location),
+                        "unit": {
+                            "url": self._get_unit_url(self.course, self.chapter, self.sequential),
+                            "display_name": self.vertical.display_name_with_default,
+                            "location": str(self.vertical.location),
                         },
-                        u"usage_id": text_type(self.html_module_2.location),
-                        u"updated": "Nov 19, 2014 at 08:06 UTC",
+                        "usage_id": str(self.html_module_2.location),
+                        "updated": "Nov 19, 2014 at 08:06 UTC",
                     },
                     {
-                        u"quote": u"quote text",
-                        u"text": u"text",
-                        u"chapter": {
-                            u"display_name": self.chapter.display_name_with_default,
-                            u"index": 0,
-                            u"location": text_type(self.chapter.location),
-                            u"children": [text_type(self.sequential.location)]
+                        "quote": "quote text",
+                        "text": "text",
+                        "chapter": {
+                            "display_name": self.chapter.display_name_with_default,
+                            "index": 0,
+                            "location": str(self.chapter.location),
+                            "children": [str(self.sequential.location)]
                         },
-                        u"section": {
-                            u"display_name": self.sequential.display_name_with_default,
-                            u"location": text_type(self.sequential.location),
-                            u"children": [
-                                text_type(self.vertical.location),
-                                text_type(self.vertical_with_container.location)]
+                        "section": {
+                            "display_name": self.sequential.display_name_with_default,
+                            "location": str(self.sequential.location),
+                            "children": [
+                                str(self.vertical.location),
+                                str(self.vertical_with_container.location)]
                         },
-                        u"unit": {
-                            u"url": self._get_unit_url(self.course, self.chapter, self.sequential),
-                            u"display_name": self.vertical.display_name_with_default,
-                            u"location": text_type(self.vertical.location),
+                        "unit": {
+                            "url": self._get_unit_url(self.course, self.chapter, self.sequential),
+                            "display_name": self.vertical.display_name_with_default,
+                            "location": str(self.vertical.location),
                         },
-                        u"usage_id": text_type(self.html_module_1.location),
-                        u"updated": "Nov 19, 2014 at 08:05 UTC",
+                        "usage_id": str(self.html_module_1.location),
+                        "updated": "Nov 19, 2014 at 08:05 UTC",
                     },
                 ]
             },
@@ -534,8 +533,7 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         Tests no results.
         """
         mock_get.return_value.content = json.dumps(NOTES_API_EMPTY_RESPONSE).encode('utf-8')
-        six.assertCountEqual(
-            self,
+        self.assertCountEqual(
             NOTES_VIEW_EMPTY_RESPONSE,
             helpers.get_notes(self.request, self.course)
         )
@@ -569,42 +567,41 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         """
         initial_collection = [
             {
-                u"quote": u"quote text",
-                u"text": u"text",
-                u"usage_id": text_type(self.html_module_1.location),
-                u"updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat()
+                "quote": "quote text",
+                "text": "text",
+                "usage_id": str(self.html_module_1.location),
+                "updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat()
             },
             {
-                u"quote": u"quote text",
-                u"text": u"text",
-                u"usage_id": text_type(self.course.id.make_usage_key("html", "test_item")),
-                u"updated": datetime(2014, 11, 19, 8, 6, 16, 00000).isoformat()
+                "quote": "quote text",
+                "text": "text",
+                "usage_id": str(self.course.id.make_usage_key("html", "test_item")),
+                "updated": datetime(2014, 11, 19, 8, 6, 16, 00000).isoformat()
             },
         ]
 
-        six.assertCountEqual(
-            self,
+        self.assertCountEqual(
             [{
-                u"quote": u"quote text",
-                u"text": u"text",
-                u"chapter": {
-                    u"display_name": self.chapter.display_name_with_default,
-                    u"index": 0,
-                    u"location": text_type(self.chapter.location),
-                    u"children": [text_type(self.sequential.location)]
+                "quote": "quote text",
+                "text": "text",
+                "chapter": {
+                    "display_name": self.chapter.display_name_with_default,
+                    "index": 0,
+                    "location": str(self.chapter.location),
+                    "children": [str(self.sequential.location)]
                 },
-                u"section": {
-                    u"display_name": self.sequential.display_name_with_default,
-                    u"location": text_type(self.sequential.location),
-                    u"children": [text_type(self.vertical.location), text_type(self.vertical_with_container.location)]
+                "section": {
+                    "display_name": self.sequential.display_name_with_default,
+                    "location": str(self.sequential.location),
+                    "children": [str(self.vertical.location), str(self.vertical_with_container.location)]
                 },
-                u"unit": {
-                    u"url": self._get_unit_url(self.course, self.chapter, self.sequential),
-                    u"display_name": self.vertical.display_name_with_default,
-                    u"location": text_type(self.vertical.location),
+                "unit": {
+                    "url": self._get_unit_url(self.course, self.chapter, self.sequential),
+                    "display_name": self.vertical.display_name_with_default,
+                    "location": str(self.vertical.location),
                 },
-                u"usage_id": text_type(self.html_module_1.location),
-                u"updated": datetime(2014, 11, 19, 8, 5, 16, 00000),
+                "usage_id": str(self.html_module_1.location),
+                "updated": datetime(2014, 11, 19, 8, 5, 16, 00000),
             }],
             helpers.preprocess_collection(self.user, self.course, initial_collection)
         )
@@ -615,43 +612,42 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         """
         initial_collection = [
             {
-                u"quote": u"quote text",
-                u"text": u"text",
-                u"usage_id": text_type(self.html_module_1.location),
-                u"updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat(),
+                "quote": "quote text",
+                "text": "text",
+                "usage_id": str(self.html_module_1.location),
+                "updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat(),
             },
             {
-                u"quote": u"quote text",
-                u"text": u"text",
-                u"usage_id": text_type(self.html_module_2.location),
-                u"updated": datetime(2014, 11, 19, 8, 6, 16, 00000).isoformat(),
+                "quote": "quote text",
+                "text": "text",
+                "usage_id": str(self.html_module_2.location),
+                "updated": datetime(2014, 11, 19, 8, 6, 16, 00000).isoformat(),
             },
         ]
         self.html_module_2.visible_to_staff_only = True
         self.store.update_item(self.html_module_2, self.user.id)
-        six.assertCountEqual(
-            self,
+        self.assertCountEqual(
             [{
-                u"quote": u"quote text",
-                u"text": u"text",
-                u"chapter": {
-                    u"display_name": self.chapter.display_name_with_default,
-                    u"index": 0,
-                    u"location": text_type(self.chapter.location),
-                    u"children": [text_type(self.sequential.location)]
+                "quote": "quote text",
+                "text": "text",
+                "chapter": {
+                    "display_name": self.chapter.display_name_with_default,
+                    "index": 0,
+                    "location": str(self.chapter.location),
+                    "children": [str(self.sequential.location)]
                 },
-                u"section": {
-                    u"display_name": self.sequential.display_name_with_default,
-                    u"location": text_type(self.sequential.location),
-                    u"children": [text_type(self.vertical.location), text_type(self.vertical_with_container.location)]
+                "section": {
+                    "display_name": self.sequential.display_name_with_default,
+                    "location": str(self.sequential.location),
+                    "children": [str(self.vertical.location), str(self.vertical_with_container.location)]
                 },
-                u"unit": {
-                    u"url": self._get_unit_url(self.course, self.chapter, self.sequential),
-                    u"display_name": self.vertical.display_name_with_default,
-                    u"location": text_type(self.vertical.location),
+                "unit": {
+                    "url": self._get_unit_url(self.course, self.chapter, self.sequential),
+                    "display_name": self.vertical.display_name_with_default,
+                    "location": str(self.vertical.location),
                 },
-                u"usage_id": text_type(self.html_module_1.location),
-                u"updated": datetime(2014, 11, 19, 8, 5, 16, 00000),
+                "usage_id": str(self.html_module_1.location),
+                "updated": datetime(2014, 11, 19, 8, 5, 16, 00000),
             }],
             helpers.preprocess_collection(self.user, self.course, initial_collection)
         )
@@ -667,14 +663,13 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         mock_modulestore.return_value = store
         mock_has_access.return_value = True
         initial_collection = [{
-            u"quote": u"quote text",
-            u"text": u"text",
-            u"usage_id": text_type(self.html_module_1.location),
-            u"updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat(),
+            "quote": "quote text",
+            "text": "text",
+            "usage_id": str(self.html_module_1.location),
+            "updated": datetime(2014, 11, 19, 8, 5, 16, 00000).isoformat(),
         }]
 
-        six.assertCountEqual(
-            self,
+        self.assertCountEqual(
             [],
             helpers.preprocess_collection(self.user, self.course, initial_collection)
         )
@@ -686,48 +681,47 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         """
         initial_collection = [
             {
-                u"quote": u"quote text1",
-                u"text": u"text1",
-                u"usage_id": text_type(self.html_module_1.location),
-                u"updated": datetime(2016, 1, 26, 8, 5, 16, 00000).isoformat(),
+                "quote": "quote text1",
+                "text": "text1",
+                "usage_id": str(self.html_module_1.location),
+                "updated": datetime(2016, 1, 26, 8, 5, 16, 00000).isoformat(),
             },
             {
-                u"quote": u"quote text2",
-                u"text": u"text2",
-                u"usage_id": text_type(self.html_module_2.location),
-                u"updated": datetime(2016, 1, 26, 9, 6, 17, 00000).isoformat(),
+                "quote": "quote text2",
+                "text": "text2",
+                "usage_id": str(self.html_module_2.location),
+                "updated": datetime(2016, 1, 26, 9, 6, 17, 00000).isoformat(),
             },
         ]
 
-        six.assertCountEqual(
-            self,
+        self.assertCountEqual(
             [
                 {
 
                     'section': {},
                     'chapter': {},
                     "unit": {
-                        u"url": self._get_unit_url(self.course, self.chapter, self.sequential),
-                        u"display_name": self.vertical.display_name_with_default,
-                        u"location": text_type(self.vertical.location),
+                        "url": self._get_unit_url(self.course, self.chapter, self.sequential),
+                        "display_name": self.vertical.display_name_with_default,
+                        "location": str(self.vertical.location),
                     },
-                    u'text': u'text1',
-                    u'quote': u'quote text1',
-                    u'usage_id': text_type(self.html_module_1.location),
-                    u'updated': datetime(2016, 1, 26, 8, 5, 16)
+                    'text': 'text1',
+                    'quote': 'quote text1',
+                    'usage_id': str(self.html_module_1.location),
+                    'updated': datetime(2016, 1, 26, 8, 5, 16)
                 },
                 {
                     'section': {},
                     'chapter': {},
                     "unit": {
-                        u"url": self._get_unit_url(self.course, self.chapter, self.sequential),
-                        u"display_name": self.vertical.display_name_with_default,
-                        u"location": text_type(self.vertical.location),
+                        "url": self._get_unit_url(self.course, self.chapter, self.sequential),
+                        "display_name": self.vertical.display_name_with_default,
+                        "location": str(self.vertical.location),
                     },
-                    u'text': u'text2',
-                    u'quote': u'quote text2',
-                    u'usage_id': text_type(self.html_module_2.location),
-                    u'updated': datetime(2016, 1, 26, 9, 6, 17)
+                    'text': 'text2',
+                    'quote': 'quote text2',
+                    'usage_id': str(self.html_module_2.location),
+                    'updated': datetime(2016, 1, 26, 9, 6, 17)
                 }
             ],
             helpers.preprocess_collection(self.user, self.course, initial_collection)
@@ -739,9 +733,9 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         """
         self.assertDictEqual(
             {
-                u"display_name": self.sequential.display_name_with_default,
-                u"location": text_type(self.sequential.location),
-                u"children": [text_type(self.vertical.location), text_type(self.vertical_with_container.location)],
+                "display_name": self.sequential.display_name_with_default,
+                "location": str(self.sequential.location),
+                "children": [str(self.vertical.location), str(self.vertical_with_container.location)],
             },
             helpers.get_module_context(self.course, self.sequential)
         )
@@ -752,8 +746,8 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         """
         self.assertDictEqual(
             {
-                u"display_name": self.html_module_1.display_name_with_default,
-                u"location": text_type(self.html_module_1.location),
+                "display_name": self.html_module_1.display_name_with_default,
+                "location": str(self.html_module_1.location),
             },
             helpers.get_module_context(self.course, self.html_module_1)
         )
@@ -764,19 +758,19 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         """
         self.assertDictEqual(
             {
-                u"display_name": self.chapter.display_name_with_default,
-                u"index": 0,
-                u"location": text_type(self.chapter.location),
-                u"children": [text_type(self.sequential.location)],
+                "display_name": self.chapter.display_name_with_default,
+                "index": 0,
+                "location": str(self.chapter.location),
+                "children": [str(self.sequential.location)],
             },
             helpers.get_module_context(self.course, self.chapter)
         )
         self.assertDictEqual(
             {
-                u"display_name": self.chapter_2.display_name_with_default,
-                u"index": 1,
-                u"location": text_type(self.chapter_2.location),
-                u"children": [],
+                "display_name": self.chapter_2.display_name_with_default,
+                "index": 1,
+                "location": str(self.chapter_2.location),
+                "children": [],
             },
             helpers.get_module_context(self.course, self.chapter_2)
         )
@@ -807,7 +801,7 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
             },
             params={
                 "user": "anonymous_id",
-                "course_id": text_type(self.course.id),
+                "course_id": str(self.course.id),
                 "text": "text",
                 "highlight": True,
                 'page': 1,
@@ -837,7 +831,7 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
             },
             params={
                 "user": "anonymous_id",
-                "course_id": text_type(self.course.id),
+                "course_id": str(self.course.id),
                 'page': helpers.DEFAULT_PAGE,
                 'page_size': helpers.DEFAULT_PAGE_SIZE,
             },
@@ -868,7 +862,7 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
 
         self.assertEqual(helpers.get_course_position(mock_course_module), {
             'display_name': 'Test Chapter Display Name',
-            'url': '/courses/{}/courseware/chapter_url_name/'.format(self.course.id),
+            'url': f'/courses/{self.course.id}/courseware/chapter_url_name/',
         })
 
     def test_get_course_position_no_section(self):
@@ -899,7 +893,7 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
 
         self.assertEqual(helpers.get_course_position(mock_course_module), {
             'display_name': 'Test Section Display Name',
-            'url': '/courses/{}/courseware/chapter_url_name/section_url_name/'.format(self.course.id),
+            'url': f'/courses/{self.course.id}/courseware/chapter_url_name/section_url_name/',
         })
 
     def test_get_index(self):
@@ -907,8 +901,8 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
         Tests `get_index` method returns unit url.
         """
         children = self.sequential.children
-        self.assertEqual(0, helpers.get_index(text_type(self.vertical.location), children))
-        self.assertEqual(1, helpers.get_index(text_type(self.vertical_with_container.location), children))
+        self.assertEqual(0, helpers.get_index(str(self.vertical.location), children))
+        self.assertEqual(1, helpers.get_index(str(self.vertical_with_container.location), children))
 
     @ddt.unpack
     @ddt.data(
@@ -933,7 +927,7 @@ class EdxNotesHelpersTest(ModuleStoreTestCase):
             host = 'https://' + self.request.get_host()
         else:
             host = 'http://' + self.request.get_host()
-        notes_url = host + reverse("notes", args=[text_type(self.course.id)])
+        notes_url = host + reverse("notes", args=[str(self.course.id)])
 
         def verify_url(constructed, expected):
             """
@@ -978,15 +972,15 @@ class EdxNotesViewsTest(ModuleStoreTestCase):
     """
     def setUp(self):
         ApplicationFactory(name="edx-notes")
-        super(EdxNotesViewsTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.course = CourseFactory(edxnotes=True)
         self.user = UserFactory()
         CourseEnrollmentFactory(user=self.user, course_id=self.course.id)  # lint-amnesty, pylint: disable=no-member
         self.client.login(username=self.user.username, password=UserFactory._DEFAULT_PASSWORD)  # lint-amnesty, pylint: disable=protected-access
-        self.notes_page_url = reverse("edxnotes", args=[text_type(self.course.id)])  # lint-amnesty, pylint: disable=no-member
-        self.notes_url = reverse("notes", args=[text_type(self.course.id)])  # lint-amnesty, pylint: disable=no-member
-        self.get_token_url = reverse("get_token", args=[text_type(self.course.id)])  # lint-amnesty, pylint: disable=no-member
-        self.visibility_url = reverse("edxnotes_visibility", args=[text_type(self.course.id)])  # lint-amnesty, pylint: disable=no-member
+        self.notes_page_url = reverse("edxnotes", args=[str(self.course.id)])  # lint-amnesty, pylint: disable=no-member
+        self.notes_url = reverse("notes", args=[str(self.course.id)])  # lint-amnesty, pylint: disable=no-member
+        self.get_token_url = reverse("get_token", args=[str(self.course.id)])  # lint-amnesty, pylint: disable=no-member
+        self.visibility_url = reverse("edxnotes_visibility", args=[str(self.course.id)])  # lint-amnesty, pylint: disable=no-member
 
     def _get_course_module(self):
         """
@@ -1167,7 +1161,7 @@ class EdxNotesRetireAPITest(ModuleStoreTestCase):
     """
     def setUp(self):
         ApplicationFactory(name="edx-notes")
-        super(EdxNotesRetireAPITest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
 
         # setup relevant states
         RetirementState.objects.create(state_name='PENDING', state_execution_order=1)
@@ -1282,7 +1276,7 @@ class EdxNotesPluginTest(ModuleStoreTestCase):
     """
 
     def setUp(self):
-        super(EdxNotesPluginTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.course = CourseFactory.create(edxnotes=True)
         self.user = UserFactory()
         CourseEnrollmentFactory.create(user=self.user, course_id=self.course.id)
