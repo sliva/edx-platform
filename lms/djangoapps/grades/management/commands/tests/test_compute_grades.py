@@ -5,16 +5,15 @@ Tests for compute_grades management command.
 # pylint: disable=protected-access
 
 
+from unittest.mock import ANY, patch
+
 import ddt
-import six
-from six.moves import range
 from django.contrib.auth import get_user_model
 from django.core.management import CommandError, call_command
-from mock import ANY, patch
 
+from common.djangoapps.student.models import CourseEnrollment
 from lms.djangoapps.grades.config.models import ComputeGradesSetting
 from lms.djangoapps.grades.management.commands import compute_grades
-from common.djangoapps.student.models import CourseEnrollment
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 
@@ -29,12 +28,12 @@ class TestComputeGrades(SharedModuleStoreTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestComputeGrades, cls).setUpClass()
+        super().setUpClass()
         cls.command = compute_grades.Command()
 
         cls.courses = [CourseFactory.create() for _ in range(cls.num_courses)]
-        cls.course_keys = [six.text_type(course.id) for course in cls.courses]
-        cls.users = [get_user_model().objects.create(username='user{}'.format(idx)) for idx in range(cls.num_users)]
+        cls.course_keys = [str(course.id) for course in cls.courses]
+        cls.users = [get_user_model().objects.create(username=f'user{idx}') for idx in range(cls.num_users)]
 
         for user in cls.users:
             for course in cls.courses:
@@ -42,12 +41,12 @@ class TestComputeGrades(SharedModuleStoreTestCase):
 
     def test_select_all_courses(self):
         courses = self.command._get_course_keys({'all_courses': True})
-        assert set(six.text_type(course) for course in courses) == set(self.course_keys)
+        assert {str(course) for course in courses} == set(self.course_keys)
 
     def test_specify_courses(self):
         courses = self.command._get_course_keys({'courses': [self.course_keys[0], self.course_keys[1], 'd/n/e']})
         self.assertEqual(
-            [six.text_type(course) for course in courses],
+            [str(course) for course in courses],
             [self.course_keys[0], self.course_keys[1], 'd/n/e'],
         )
 
@@ -58,7 +57,7 @@ class TestComputeGrades(SharedModuleStoreTestCase):
     def test_from_settings(self):
         ComputeGradesSetting.objects.create(course_ids=" ".join(self.course_keys))
         courses = self.command._get_course_keys({'from_settings': True})
-        assert set(six.text_type(course) for course in courses) == set(self.course_keys)
+        assert {str(course) for course in courses} == set(self.course_keys)
         # test that --from_settings always uses the latest setting
         ComputeGradesSetting.objects.create(course_ids='badcoursekey')
         with self.assertRaises(CommandError):
