@@ -6,13 +6,11 @@ Models for bulk email
 import logging
 
 import markupsafe
-import six
-from config_models.models import ConfigurationModel  # lint-amnesty, pylint: disable=import-error
+from config_models.models import ConfigurationModel
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from opaque_keys.edx.django.models import CourseKeyField  # lint-amnesty, pylint: disable=import-error
-from six import text_type
+from opaque_keys.edx.django.models import CourseKeyField
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.roles import CourseInstructorRole, CourseStaffRole

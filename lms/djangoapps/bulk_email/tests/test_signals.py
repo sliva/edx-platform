@@ -9,7 +9,6 @@ from unittest.mock import Mock, patch
 from django.core import mail
 from django.core.management import call_command
 from django.urls import reverse
-from six import text_type
 
 from common.djangoapps.student.tests.factories import AdminFactory, CourseEnrollmentFactory, UserFactory
 from lms.djangoapps.bulk_email.models import BulkEmailFlag, Optout

@@ -25,9 +25,9 @@ from boto.ses.exceptions import (
     SESLocalAddressCharacterError,
     SESMaxSendingRateExceededError
 )
-from celery import current_task, shared_task  # lint-amnesty, pylint: disable=import-error
-from celery.exceptions import RetryTaskError  # lint-amnesty, pylint: disable=import-error
-from celery.states import FAILURE, RETRY, SUCCESS  # lint-amnesty, pylint: disable=import-error
+from celery import current_task, shared_task
+from celery.exceptions import RetryTaskError
+from celery.states import FAILURE, RETRY, SUCCESS
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.core.mail.message import forbid_multi_line_headers
@@ -37,7 +37,6 @@ from django.utils.translation import override as override_language
 from django.utils.translation import ugettext as _
 from edx_django_utils.monitoring import set_code_owner_attribute
 from markupsafe import escape
-from six import text_type
 
 from common.djangoapps.util.date_utils import get_default_time_display
 from common.djangoapps.util.string_utils import _has_non_ascii_characters

@@ -6,7 +6,6 @@ import json
 import logging
 
 import pytz
-import six
 from ccx_keys.locator import CCXLocator
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.db import transaction

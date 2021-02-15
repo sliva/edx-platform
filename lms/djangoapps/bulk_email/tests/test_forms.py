@@ -4,7 +4,6 @@ Unit tests for bulk-email-related forms.
 
 
 from opaque_keys.edx.locator import CourseLocator
-from six import text_type
 
 from lms.djangoapps.bulk_email.api import is_bulk_email_feature_enabled
 from lms.djangoapps.bulk_email.forms import CourseAuthorizationAdminForm, CourseEmailTemplateForm

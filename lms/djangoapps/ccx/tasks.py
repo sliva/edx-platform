@@ -5,7 +5,6 @@ Asynchronous tasks for the CCX app.
 
 import logging
 
-import six
 from ccx_keys.locator import CCXLocator
 from django.dispatch import receiver
 from opaque_keys import InvalidKeyError

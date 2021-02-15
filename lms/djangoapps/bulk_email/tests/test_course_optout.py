@@ -13,7 +13,6 @@ from edx_ace.channel import ChannelType
 from edx_ace.message import Message
 from edx_ace.policy import PolicyResult
 from edx_ace.recipient import Recipient
-from six import text_type
 
 from common.djangoapps.student.models import CourseEnrollment
 from common.djangoapps.student.tests.factories import AdminFactory, CourseEnrollmentFactory, UserFactory

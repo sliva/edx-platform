@@ -15,7 +15,6 @@ from django.core.management import call_command
 from django.db import DatabaseError
 from django.urls import reverse
 from opaque_keys.edx.locator import CourseLocator
-from six import text_type
 
 from common.djangoapps.student.tests.factories import AdminFactory, CourseEnrollmentFactory, UserFactory
 from lms.djangoapps.bulk_email.models import SEND_TO_MYSELF, BulkEmailFlag, CourseEmail

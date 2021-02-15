@@ -13,7 +13,6 @@ version that was passed in.
 from contextlib import contextmanager
 from functools import partial
 
-import six
 from ccx_keys.locator import CCXBlockUsageLocator, CCXLocator
 from opaque_keys.edx.locator import BlockUsageLocator, CourseLocator
 

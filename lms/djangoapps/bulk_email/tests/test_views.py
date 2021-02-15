@@ -7,7 +7,6 @@ from django.http import Http404
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.urls import reverse
-from six import text_type
 
 from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.bulk_email.models import Optout

@@ -9,7 +9,6 @@ from unittest import mock
 
 import ddt
 import pytest
-import six
 from ccx_keys.locator import CCXLocator
 from django.conf import settings
 from django.contrib.messages.storage.fallback import FallbackStorage

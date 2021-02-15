@@ -9,7 +9,6 @@ from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imp
 from django.http import Http404
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
-from six import text_type
 
 from common.djangoapps.edxmako.shortcuts import render_to_response
 from lms.djangoapps.bulk_email.models import Optout

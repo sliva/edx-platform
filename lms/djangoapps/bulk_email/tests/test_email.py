@@ -9,7 +9,6 @@ from unittest import skipIf
 from unittest.mock import Mock, patch
 
 import ddt
-import six
 from django.conf import settings
 from django.core import mail
 from django.core.mail.message import forbid_multi_line_headers
