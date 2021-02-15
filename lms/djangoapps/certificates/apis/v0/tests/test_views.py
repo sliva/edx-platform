@@ -3,17 +3,16 @@ Tests for the Certificate REST APIs.
 """
 
 
+from unittest.mock import patch
+
 import ddt
 import six
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from freezegun import freeze_time
-from mock import patch
 from rest_framework import status
 from rest_framework.test import APITestCase
-from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
-from xmodule.modulestore.tests.factories import CourseFactory
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.tests.factories import UserFactory
@@ -23,6 +22,8 @@ from lms.djangoapps.certificates.tests.factories import GeneratedCertificateFact
 from openedx.core.djangoapps.content.course_overviews.tests.factories import CourseOverviewFactory
 from openedx.core.djangoapps.user_api.tests.factories import UserPreferenceFactory
 from openedx.core.djangoapps.user_authn.tests.utils import JWT_AUTH_TYPES, AuthAndScopesTestMixin, AuthType
+from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory
 
 
 @ddt.ddt
@@ -35,7 +36,7 @@ class CertificatesDetailRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTes
 
     @classmethod
     def setUpClass(cls):
-        super(CertificatesDetailRestApiTest, cls).setUpClass()
+        super().setUpClass()
         cls.course = CourseFactory.create(
             org='edx',
             number='verified',
@@ -88,7 +89,7 @@ class CertificatesDetailRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTes
                 'grade': '0.88',
                 'download_url': 'www.google.com',
                 'certificate_type': CourseMode.VERIFIED,
-                'course_id': six.text_type(self.course.id),
+                'course_id': str(self.course.id),
                 'created_date': self.now,
             }
         )
@@ -137,7 +138,7 @@ class CertificatesListRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTestC
 
     @classmethod
     def setUpClass(cls):
-        super(CertificatesListRestApiTest, cls).setUpClass()
+        super().setUpClass()
         cls.course = CourseFactory.create(
             org='edx',
             number='verified',
@@ -186,7 +187,7 @@ class CertificatesListRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTestC
             response.data,
             [{
                 'username': self.student.username,
-                'course_id': six.text_type(self.course.id),
+                'course_id': str(self.course.id),
                 'course_display_name': self.course.display_name,
                 'course_organization': self.course.org,
                 'certificate_type': CourseMode.VERIFIED,

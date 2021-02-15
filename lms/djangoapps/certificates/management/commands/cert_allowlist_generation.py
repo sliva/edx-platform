@@ -79,5 +79,5 @@ def _get_user_from_identifier(identifier):
             user = User.objects.get(username=identifier)
         return user
     except User.DoesNotExist:
-        log.warning('User {user} could not be found'.format(user=identifier))
+        log.warning(f'User {identifier} could not be found')
         return None

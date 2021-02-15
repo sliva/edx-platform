@@ -25,7 +25,7 @@ class CreateFakeCertTest(TestCase):
         # No existing cert, so create it
         self._run_command(
             self.USERNAME,
-            text_type(self.COURSE_KEY),
+            str(self.COURSE_KEY),
             cert_mode='verified',
             grade='0.89'
         )
@@ -39,17 +39,14 @@ class CreateFakeCertTest(TestCase):
         # Cert already exists; modify it
         self._run_command(
             self.USERNAME,
-            text_type(self.COURSE_KEY),
+            str(self.COURSE_KEY),
             cert_mode='honor'
         )
         cert = GeneratedCertificate.eligible_certificates.get(user=self.user, course_id=self.COURSE_KEY)
         self.assertEqual(cert.mode, 'honor')
 
     def test_too_few_args(self):
-        if six.PY2:
-            errstring = 'Error: too few arguments'
-        else:
-            errstring = 'Error: the following arguments are required: COURSE_KEY'
+        errstring = 'Error: the following arguments are required: COURSE_KEY'
         with self.assertRaisesRegex(CommandError, errstring):
             self._run_command(self.USERNAME)
 
