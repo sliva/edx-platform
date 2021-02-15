@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 import six
 
 
-class BadgeBackend(six.with_metaclass(ABCMeta, object)):
+class BadgeBackend(metaclass=ABCMeta):
     """
     Defines the interface for badging backends.
     """

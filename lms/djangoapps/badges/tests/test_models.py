@@ -3,16 +3,17 @@ Tests for the Badges app models.
 """
 
 
+from unittest.mock import Mock, patch  # lint-amnesty, pylint: disable=import-error
+
 from django.core.exceptions import ValidationError
 from django.core.files.images import ImageFile
 from django.core.files.storage import default_storage
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.test.utils import override_settings
-from mock import Mock, patch  # lint-amnesty, pylint: disable=import-error
 from path import Path  # lint-amnesty, pylint: disable=import-error
-from six.moves import range
 
+from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.badges.models import (
     BadgeAssertion,
     BadgeClass,
@@ -22,9 +23,8 @@ from lms.djangoapps.badges.models import (
 )
 from lms.djangoapps.badges.tests.factories import BadgeAssertionFactory, BadgeClassFactory, RandomBadgeClassFactory
 from lms.djangoapps.certificates.tests.test_models import TEST_DATA_ROOT
-from common.djangoapps.student.tests.factories import UserFactory
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=import-error, wrong-import-order
-from xmodule.modulestore.tests.factories import CourseFactory  # lint-amnesty, pylint: disable=import-error, wrong-import-order
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory
 
 
 def get_image(name):
@@ -64,7 +64,7 @@ class BadgeImageConfigurationTest(TestCase):
         )
 
 
-class DummyBackend(object):
+class DummyBackend:
     """
     Dummy badge backend, used for testing.
     """
@@ -78,7 +78,7 @@ class BadgeClassTest(ModuleStoreTestCase):
     """
 
     def setUp(self):
-        super(BadgeClassTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.addCleanup(self.cleanup_uploads)
 
     def cleanup_uploads(self):
