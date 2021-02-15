@@ -6,8 +6,8 @@ Tests for wiki views.
 from django.conf import settings
 from django.test.client import RequestFactory
 
-from lms.djangoapps.courseware.tabs import get_course_tab_list
 from common.djangoapps.student.tests.factories import AdminFactory, UserFactory
+from lms.djangoapps.courseware.tabs import get_course_tab_list
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 
@@ -16,7 +16,7 @@ class WikiTabTestCase(ModuleStoreTestCase):
     """Test cases for Wiki Tab."""
 
     def setUp(self):
-        super(WikiTabTestCase, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.course = CourseFactory.create()
         self.instructor = AdminFactory.create()
         self.user = UserFactory()
