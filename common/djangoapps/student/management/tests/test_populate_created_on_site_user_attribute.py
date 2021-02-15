@@ -1,3 +1,4 @@
+import pytest
 """
 Unittests for populate_created_on_site_user_attribute management command.
 """
@@ -50,7 +51,7 @@ class TestPopulateUserAttribute(SiteMixin, TestCase):
         )
 
         for user in self.users:
-            self.assertEqual(UserAttribute.get_user_attribute(user, CREATED_ON_SITE), self.site.domain)
+            assert UserAttribute.get_user_attribute(user, CREATED_ON_SITE) == self.site.domain
 
         # Populate 'created_on_site' attribute with different site domain
         call_command(
@@ -61,7 +62,7 @@ class TestPopulateUserAttribute(SiteMixin, TestCase):
 
         for user in self.users:
             # 'created_on_site' attribute already exists. Attribute's value will not change
-            self.assertNotEqual(UserAttribute.get_user_attribute(user, CREATED_ON_SITE), self.site_other.domain)
+            assert UserAttribute.get_user_attribute(user, CREATED_ON_SITE) != self.site_other.domain
 
     def test_command_by_activation_keys(self):
         """
@@ -74,7 +75,7 @@ class TestPopulateUserAttribute(SiteMixin, TestCase):
         )
 
         for register_user in self.registered_users:
-            self.assertEqual(UserAttribute.get_user_attribute(register_user.user, CREATED_ON_SITE), self.site.domain)
+            assert UserAttribute.get_user_attribute(register_user.user, CREATED_ON_SITE) == self.site.domain
 
         # Populate 'created_on_site' attribute with different site domain
         call_command(
@@ -85,16 +86,13 @@ class TestPopulateUserAttribute(SiteMixin, TestCase):
 
         for register_user in self.registered_users:
             # 'created_on_site' attribute already exists. Attribute's value will not change
-            self.assertNotEqual(
-                UserAttribute.get_user_attribute(register_user.user, CREATED_ON_SITE),
-                self.site_other.domain
-            )
+            assert UserAttribute.get_user_attribute(register_user.user, CREATED_ON_SITE) != self.site_other.domain
 
     def test_command_with_incomplete_argument(self):
         """
         Test management command raises CommandError without '--users' and '--activation_keys' arguments.
         """
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command(
                 "populate_created_on_site_user_attribute",
                 "--site-domain", self.site.domain
@@ -110,7 +108,7 @@ class TestPopulateUserAttribute(SiteMixin, TestCase):
             "--users", '9{id}'.format(id=user.id),  # invalid id
             "--site-domain", self.site.domain
         )
-        self.assertIsNone(UserAttribute.get_user_attribute(user, CREATED_ON_SITE))
+        assert UserAttribute.get_user_attribute(user, CREATED_ON_SITE) is None
 
         register_user = self.registered_users[0]
         call_command(
@@ -118,13 +116,13 @@ class TestPopulateUserAttribute(SiteMixin, TestCase):
             "--activation-keys", "invalid-{key}".format(key=register_user.activation_key),  # invalid key
             "--site-domain", self.site.domain
         )
-        self.assertIsNone(UserAttribute.get_user_attribute(register_user.user, CREATED_ON_SITE))
+        assert UserAttribute.get_user_attribute(register_user.user, CREATED_ON_SITE) is None
 
     def test_command_without_site_domain(self):
         """
         Test management command raises CommandError without '--site-domain' argument.
         """
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command(
                 "populate_created_on_site_user_attribute",
                 "--user", self.user_ids,
@@ -146,6 +144,6 @@ class TestPopulateUserAttribute(SiteMixin, TestCase):
 
         for user in self.users:
             if populate == 'y':
-                self.assertEqual(UserAttribute.get_user_attribute(user, CREATED_ON_SITE), fake_site_domain)
+                assert UserAttribute.get_user_attribute(user, CREATED_ON_SITE) == fake_site_domain
             else:
-                self.assertIsNone(UserAttribute.get_user_attribute(user, CREATED_ON_SITE))
+                assert UserAttribute.get_user_attribute(user, CREATED_ON_SITE) is None
