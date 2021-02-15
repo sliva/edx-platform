@@ -49,15 +49,15 @@ class SelfGeneratedCertsSignalTest(ModuleStoreTestCase):
         according to course-pacing.
         """
         course = CourseFactory.create(self_paced=False, emit_signals=True)
-        self.assertFalse(cert_generation_enabled(course.id))
+        assert not cert_generation_enabled(course.id)
 
         course.self_paced = True
         self.store.update_item(course, self.user.id)
-        self.assertTrue(cert_generation_enabled(course.id))
+        assert cert_generation_enabled(course.id)
 
         course.self_paced = False
         self.store.update_item(course, self.user.id)
-        self.assertFalse(cert_generation_enabled(course.id))
+        assert not cert_generation_enabled(course.id)
 
 
 class WhitelistGeneratedCertificatesTest(ModuleStoreTestCase):
@@ -335,7 +335,7 @@ class FailingGradeCertsTest(ModuleStoreTestCase):
         )
         CourseGradeFactory().update(self.user, self.course)
         cert = GeneratedCertificate.certificate_for_student(self.user, self.course.id)
-        self.assertEqual(cert.status, expected_status)
+        assert cert.status == expected_status
 
     @override_waffle_flag(CERTIFICATES_USE_ALLOWLIST, active=True)
     def test_failing_grade_allowlist(self):
@@ -347,7 +347,7 @@ class FailingGradeCertsTest(ModuleStoreTestCase):
         )
         CourseGradeFactory().update(self.user, self.course)
         cert = GeneratedCertificate.certificate_for_student(self.user, self.course.id)
-        self.assertEqual(cert.status, CertificateStatuses.notpassing)
+        assert cert.status == CertificateStatuses.notpassing
 
         # User who is on the allowlist
         u = UserFactory.create()
@@ -364,7 +364,7 @@ class FailingGradeCertsTest(ModuleStoreTestCase):
         )
         CourseGradeFactory().update(u, c)
         cert = GeneratedCertificate.certificate_for_student(u, course_key)
-        self.assertEqual(cert.status, CertificateStatuses.downloadable)
+        assert cert.status == CertificateStatuses.downloadable
 
 
 class LearnerTrackChangeCertsTest(ModuleStoreTestCase):
@@ -477,4 +477,4 @@ class CertificateGenerationTaskTest(ModuleStoreTestCase):
             with override_waffle_switch(AUTO_CERTIFICATE_GENERATION_SWITCH, active=True):
                 fire_ungenerated_certificate_task(self.user, self.course.id)
                 task_created = mock_generate_certificate_apply_async.called
-                self.assertEqual(task_created, should_create)
+                assert task_created == should_create

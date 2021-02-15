@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for Course Blocks forms
 """
@@ -70,14 +71,14 @@ class TestBlockListGetForm(FormTestMixin, SharedModuleStoreTestCase):
         """
         Fail unless permission is denied to the form
         """
-        with self.assertRaises(PermissionDenied):
+        with pytest.raises(PermissionDenied):
             self.get_form(expected_valid=False)
 
     def assert_raises_not_found(self):
         """
         Fail unless a 404 occurs
         """
-        with self.assertRaises(Http404):
+        with pytest.raises(Http404):
             self.get_form(expected_valid=False)
 
     def assert_equals_cleaned_data(self):
