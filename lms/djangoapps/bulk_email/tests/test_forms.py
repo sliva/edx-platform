@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Unit tests for bulk-email-related forms.
 """
@@ -18,20 +17,20 @@ class CourseAuthorizationFormTest(ModuleStoreTestCase):
     """Test the CourseAuthorizationAdminForm form for Mongo-backed courses."""
 
     def setUp(self):
-        super(CourseAuthorizationFormTest, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
-        course_title = u"ẗëṡẗ title ｲ乇丂ｲ ﾶ乇丂丂ﾑg乇 ｷo尺 ﾑﾚﾚ тэѕт мэѕѕаБэ"
+        super().setUp()
+        course_title = "ẗëṡẗ title ｲ乇丂ｲ ﾶ乇丂丂ﾑg乇 ｷo尺 ﾑﾚﾚ тэѕт мэѕѕаБэ"
         self.course = CourseFactory.create(display_name=course_title)
         BulkEmailFlag.objects.create(enabled=True, require_course_email_auth=True)
 
     def tearDown(self):
-        super(CourseAuthorizationFormTest, self).tearDown()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().tearDown()
         BulkEmailFlag.objects.all().delete()
 
     def test_authorize_mongo_course(self):
         # Initially course shouldn't be authorized
         self.assertFalse(is_bulk_email_feature_enabled(self.course.id))
         # Test authorizing the course, which should totally work
-        form_data = {'course_id': text_type(self.course.id), 'email_enabled': True}
+        form_data = {'course_id': str(self.course.id), 'email_enabled': True}
         form = CourseAuthorizationAdminForm(data=form_data)
         # Validation should work
         self.assertTrue(form.is_valid())
@@ -43,7 +42,7 @@ class CourseAuthorizationFormTest(ModuleStoreTestCase):
         # Initially course shouldn't be authorized
         self.assertFalse(is_bulk_email_feature_enabled(self.course.id))
         # Test authorizing the course, which should totally work
-        form_data = {'course_id': text_type(self.course.id), 'email_enabled': True}
+        form_data = {'course_id': str(self.course.id), 'email_enabled': True}
         form = CourseAuthorizationAdminForm(data=form_data)
         # Validation should work
         self.assertTrue(form.is_valid())
@@ -52,7 +51,7 @@ class CourseAuthorizationFormTest(ModuleStoreTestCase):
         self.assertTrue(is_bulk_email_feature_enabled(self.course.id))
 
         # Now make a new course authorization with the same course id that tries to turn email off
-        form_data = {'course_id': text_type(self.course.id), 'email_enabled': False}
+        form_data = {'course_id': str(self.course.id), 'email_enabled': False}
         form = CourseAuthorizationAdminForm(data=form_data)
         # Validation should not work because course_id field is unique
         self.assertFalse(form.is_valid())
@@ -71,15 +70,15 @@ class CourseAuthorizationFormTest(ModuleStoreTestCase):
 
     def test_form_typo(self):
         # Munge course id
-        bad_id = CourseLocator(u'Broken{}'.format(self.course.id.org), 'hello', self.course.id.run + '_typo')
+        bad_id = CourseLocator(f'Broken{self.course.id.org}', 'hello', self.course.id.run + '_typo')
 
-        form_data = {'course_id': text_type(bad_id), 'email_enabled': True}
+        form_data = {'course_id': str(bad_id), 'email_enabled': True}
         form = CourseAuthorizationAdminForm(data=form_data)
         # Validation shouldn't work
         self.assertFalse(form.is_valid())
 
-        msg = u'Course not found.'
-        msg += u' Entered course id was: "{0}".'.format(text_type(bad_id))
+        msg = 'Course not found.'
+        msg += ' Entered course id was: "{}".'.format(str(bad_id))
         self.assertEqual(msg, form._errors['course_id'][0])  # pylint: disable=protected-access
 
         with self.assertRaisesRegex(
@@ -94,8 +93,8 @@ class CourseAuthorizationFormTest(ModuleStoreTestCase):
         # Validation shouldn't work
         self.assertFalse(form.is_valid())
 
-        msg = u'Course id invalid.'
-        msg += u' Entered course id was: "asd::**!@#$%^&*())//foobar!!".'
+        msg = 'Course id invalid.'
+        msg += ' Entered course id was: "asd::**!@#$%^&*())//foobar!!".'
         self.assertEqual(msg, form._errors['course_id'][0])  # pylint: disable=protected-access
 
         with self.assertRaisesRegex(
@@ -112,7 +111,7 @@ class CourseAuthorizationFormTest(ModuleStoreTestCase):
         self.assertFalse(form.is_valid())
 
         error_msg = form._errors['course_id'][0]  # pylint: disable=protected-access
-        self.assertIn(u'Entered course id was: "{0}".'.format(self.course.id.run), error_msg)
+        self.assertIn(f'Entered course id was: "{self.course.id.run}".', error_msg)
 
         with self.assertRaisesRegex(
             ValueError,
