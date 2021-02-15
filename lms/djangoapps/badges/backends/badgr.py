@@ -12,7 +12,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from eventtracking import tracker
 from lazy import lazy  # lint-amnesty, pylint: disable=no-name-in-module
-from requests.packages.urllib3.exceptions import HTTPError
+from requests.packages.urllib3.exceptions import HTTPError  # lint-amnesty, pylint: disable=import-error
 
 from lms.djangoapps.badges.backends.base import BadgeBackend
 from lms.djangoapps.badges.models import BadgeAssertion

@@ -144,7 +144,7 @@ class CourseGroupBadgeTest(ModuleStoreTestCase):
         ]
         self.courses = []
         for _badge_class in self.badge_classes:
-            self.courses.append([CourseFactory().location.course_key for _i in range(3)])
+            self.courses.append([CourseFactory().location.course_key for _i in range(3)])  # lint-amnesty, pylint: disable=no-member
         lines = [badge_class.slug + ',' + ','.join([str(course_key) for course_key in keys])
                  for badge_class, keys in zip(self.badge_classes, self.courses)]
         config = '\r'.join(lines)
