@@ -131,7 +131,7 @@ class UserPartitionTransformer(BlockStructureTransformer):
                     )
 
 
-class _MergedGroupAccess(object):
+class _MergedGroupAccess:
     """
     A class object to represent the computed access value for a block,
     merged from the inherited values from its ancestors.
