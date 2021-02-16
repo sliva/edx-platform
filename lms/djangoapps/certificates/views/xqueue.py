@@ -74,7 +74,6 @@ def update_certificate(request):
     This view should only ever be accessed by the xqueue server
     """
 
-    # TODO: here
     status = CertificateStatuses
     if request.method == "POST":
 

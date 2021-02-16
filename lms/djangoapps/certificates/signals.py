@@ -58,7 +58,7 @@ def _listen_for_certificate_whitelist_append(sender, instance, **kwargs):  # pyl
         log.info('{course} is using allowlist certificates, and the user {user} is on its allowlist. Attempt will be '
                  'made to generate an allowlist certificate after allowlist append.'.format(course=instance.course_id,
                                                                                             user=instance.user.id))
-        return generate_allowlist_certificate_task(user, instance.course_id)
+        return generate_allowlist_certificate_task(instance.user, instance.course_id)
 
     if not auto_certificate_generation_enabled():
         return
