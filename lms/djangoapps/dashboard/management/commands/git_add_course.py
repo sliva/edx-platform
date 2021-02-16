@@ -27,7 +27,7 @@ class Command(BaseCommand):
     help = ('Usage: '
             'git_add_course repository_url [directory to check out into] [repository_branch] '
             '\n{}'.format(_('Import the specified git repository and optional branch into the '
-                             'modulestore and optionally specified directory.')))
+                            'modulestore and optionally specified directory.')))
 
     def add_arguments(self, parser):
         # Positional arguments

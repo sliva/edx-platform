@@ -19,7 +19,6 @@ from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imp
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
 from django.views.decorators.http import require_GET, require_POST
-import six
 from six import text_type
 
 from common.djangoapps.edxmako.shortcuts import render_to_response
@@ -34,7 +33,7 @@ class UsernameDecryptionException(Exception):
     pass
 
 
-class UsernameCipher(object):
+class UsernameCipher:
     """
     A transformation of a username to/from an opaque token
 
@@ -56,7 +55,7 @@ class UsernameCipher(object):
     @staticmethod
     def _get_aes_cipher(initialization_vector):
         hash_ = sha256()
-        hash_.update(six.b(settings.SECRET_KEY))
+        hash_.update(settings.SECRET_KEY)
         return Cipher(AES(hash_.digest()), CBC(initialization_vector), backend=default_backend())
 
     @staticmethod
@@ -191,7 +190,7 @@ def set_subscription(request, token, subscribe):
     except UnicodeDecodeError:
         raise Http404("base64url")  # lint-amnesty, pylint: disable=raise-missing-from
     except UsernameDecryptionException as exn:
-        raise Http404(text_type(exn))  # lint-amnesty, pylint: disable=raise-missing-from
+        raise Http404(str(exn))  # lint-amnesty, pylint: disable=raise-missing-from
     except User.DoesNotExist:
         raise Http404("username")  # lint-amnesty, pylint: disable=raise-missing-from
 
