@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for Management commands of comprehensive theming.
 """
@@ -24,19 +25,19 @@ class TestUpdateAssets(TestCase):
         Test update_asset command.
         """
         # make sure error is raised for invalid theme list
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command("compile_sass", themes=["all", "test-theme"])
 
         # make sure error is raised for invalid theme list
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command("compile_sass", themes=["no", "test-theme"])
 
         # make sure error is raised for invalid theme list
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command("compile_sass", themes=["all", "no"])
 
         # make sure error is raised for invalid theme list
-        with self.assertRaises(CommandError):
+        with pytest.raises(CommandError):
             call_command("compile_sass", themes=["test-theme", "non-existing-theme"])
 
     def test_parse_arguments(self):
