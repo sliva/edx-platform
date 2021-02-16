@@ -10,7 +10,6 @@ import random
 from collections import namedtuple
 from itertools import chain
 
-import six
 from django.core.management.base import BaseCommand
 from mailsnake import MailSnake
 from opaque_keys.edx.keys import CourseKey
