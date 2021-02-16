@@ -12,6 +12,7 @@ from datetime import datetime
 from functools import reduce
 
 import six
+from django.contrib.auth import get_user_model
 from lxml import etree
 from opaque_keys.edx.keys import UsageKey
 from pkg_resources import resource_string
