@@ -50,11 +50,11 @@ def request_certificate(request):
             course = modulestore().get_course(course_key, depth=2)
 
             status = certificate_status_for_student(student, course_key)['status']
-            if is_using_certificate_allowlist_and_is_on_allowlist(user, enrollment.course_id):
+            if is_using_certificate_allowlist_and_is_on_allowlist(user, course_key):
                 log.info('{course} is using allowlist certificates, and the user {user} is on its allowlist. Attempt '
                          'will be made to generate an allowlist certificate.'.format(course=course_key,
                                                                                      user=student.id))
-                generate_allowlist_certificate_task(student, enrollment.course_id)
+                generate_allowlist_certificate_task(student, course_key)
             elif status in [CertificateStatuses.unavailable, CertificateStatuses.notpassing, CertificateStatuses.error]:
                 log_msg = u'Grading and certification requested for user %s in course %s via /request_certificate call'
                 log.info(log_msg, username, course_key)
