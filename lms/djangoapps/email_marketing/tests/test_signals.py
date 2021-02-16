@@ -25,13 +25,12 @@ from lms.djangoapps.email_marketing.tasks import (  # lint-amnesty, pylint: disa
     _get_list_from_email_marketing_provider,
     _get_or_create_user_list,
     get_email_cookies_via_sailthru,
-    update_course_enrollment,
     update_user,
     update_user_email
 )
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 from common.djangoapps.student.models import Registration, User
-from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory, UserProfileFactory  # lint-amnesty, pylint: disable=unused-import
+from common.djangoapps.student.tests.factories import UserFactory  # lint-amnesty, pylint: disable=unused-import
 from common.djangoapps.util.json_request import JsonResponse
 
 from ..models import EmailMarketingConfiguration
