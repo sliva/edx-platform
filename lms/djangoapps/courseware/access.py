@@ -16,6 +16,7 @@ import logging
 from datetime import datetime
 
 import six
+from django.conf import settings  # pylint: disable=unused-import
 from django.contrib.auth.models import AnonymousUser
 from edx_django_utils.monitoring import function_trace
 from opaque_keys.edx.keys import CourseKey, UsageKey

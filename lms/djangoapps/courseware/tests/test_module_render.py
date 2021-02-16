@@ -17,7 +17,6 @@ from bson import ObjectId
 from completion.waffle import ENABLE_COMPLETION_TRACKING_SWITCH  # lint-amnesty, pylint: disable=wrong-import-order
 from completion.models import BlockCompletion  # lint-amnesty, pylint: disable=wrong-import-order
 from django.conf import settings  # lint-amnesty, pylint: disable=wrong-import-order
-from common.djangoapps.course_modes.models import CourseMode
 from django.contrib.auth.models import AnonymousUser  # lint-amnesty, pylint: disable=wrong-import-order
 from django.http import Http404, HttpResponse  # lint-amnesty, pylint: disable=wrong-import-order
 from django.middleware.csrf import get_token  # lint-amnesty, pylint: disable=wrong-import-order
