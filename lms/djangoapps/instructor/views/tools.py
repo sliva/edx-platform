@@ -193,10 +193,10 @@ def set_due_date_extension(course, unit, student, due_date, actor=None, reason='
             try:
                 api.set_date_for_block(course.id, block.location, 'due', due_date, user=student, reason=reason,
                                        actor=actor)
-            except api.MissingDateError:
-                raise DashboardError(_("Unit {0} has no due date to extend.").format(unit.location))
-            except api.InvalidDateError:
-                raise DashboardError(_("An extended due date must be later than the original due date."))
+            except api.MissingDateError as ex:
+                raise DashboardError(_("Unit {0} has no due date to extend.").format(unit.location)) from ex
+            except api.InvalidDateError as ex:
+                raise DashboardError(_("An extended due date must be later than the original due date.")) from ex
         else:
             api.set_date_for_block(course.id, block.location, 'due', None, user=student, reason=reason, actor=actor)
 

@@ -13,7 +13,6 @@ import random
 import re
 import string
 
-import unicodecsv
 from django.conf import settings
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist, PermissionDenied, ValidationError
@@ -65,7 +64,6 @@ from common.djangoapps.student.models import (
 from common.djangoapps.student.roles import CourseFinanceAdminRole, CourseSalesAdminRole
 from common.djangoapps.util.file import (
     FileValidationException,
-    UniversalNewlineIterator,
     course_and_time_based_filename_generator,
     store_uploaded_file
 )
