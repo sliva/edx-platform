@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for block_structure_factory.py
 """
@@ -30,7 +31,7 @@ class TestBlockStructureFactory(TestCase, ChildrenMapTestMixin):
         self.assert_block_structure(block_structure, self.children_map)
 
     def test_from_modulestore_fail(self):
-        with self.assertRaises(ItemNotFoundError):
+        with pytest.raises(ItemNotFoundError):
             BlockStructureFactory.create_from_modulestore(
                 root_block_usage_key=len(self.children_map) + 1,
                 modulestore=self.modulestore,
@@ -48,7 +49,7 @@ class TestBlockStructureFactory(TestCase, ChildrenMapTestMixin):
 
     def test_from_cache_none(self):
         store = BlockStructureStore(MockCache())
-        with self.assertRaises(BlockStructureNotFound):
+        with pytest.raises(BlockStructureNotFound):
             BlockStructureFactory.create_from_store(
                 root_block_usage_key=0,
                 block_structure_store=store,

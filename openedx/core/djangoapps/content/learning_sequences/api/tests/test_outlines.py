@@ -1,3 +1,4 @@
+import pytest
 """
 Top level API tests. Tests API public contracts only. Do not import/create/mock
 models for this app.
@@ -64,12 +65,12 @@ class CourseOutlineTestCase(CacheIsolationTestCase):
     def test_deprecated_course_key(self):
         """Don't allow Old Mongo Courses at all."""
         old_course_key = CourseKey.from_string("Org/Course/Run")
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             outline = get_course_outline(old_course_key)  # lint-amnesty, pylint: disable=unused-variable
 
     def test_simple_roundtrip(self):
         """Happy path for writing/reading-back a course outline."""
-        with self.assertRaises(CourseOutlineData.DoesNotExist):
+        with pytest.raises(CourseOutlineData.DoesNotExist):
             course_outline = get_course_outline(self.course_key)  # lint-amnesty, pylint: disable=unused-variable
 
         replace_course_outline(self.course_outline)
@@ -79,8 +80,8 @@ class CourseOutlineTestCase(CacheIsolationTestCase):
     def test_empty_course(self):
         """Empty Courses are a common case (when authoring just starts)."""
         empty_outline = attr.evolve(self.course_outline, sections=[])
-        self.assertFalse(empty_outline.sections)
-        self.assertFalse(empty_outline.sequences)
+        assert not empty_outline.sections
+        assert not empty_outline.sequences
         replace_course_outline(empty_outline)
         assert empty_outline == get_course_outline(self.course_key)
 
@@ -1197,15 +1198,9 @@ class SequentialVisibilityTestCase(CacheIsolationTestCase):
             with self.subTest(user=user):
                 user_course_outline = get_user_course_outline(self.course_key, user, self.course_access_time)
 
-                self.assertEqual(len(user_course_outline.sections), 3)
-                self.assertEqual(len(user_course_outline.sequences), 6)
-                self.assertTrue(
-                    all([
-                        seq.usage_key in user_course_outline.accessible_sequences
-                        for seq in user_course_outline.sequences.values()
-                    ]),
-                    "Sequences should be accessible to all users for a public course"
-                )
+                assert len(user_course_outline.sections) == 3
+                assert len(user_course_outline.sequences) == 6
+                assert all([(seq.usage_key in user_course_outline.accessible_sequences) for seq in user_course_outline.sequences.values()]), 'Sequences should be accessible to all users for a public course'
 
     @override_waffle_flag(COURSE_ENABLE_UNENROLLED_ACCESS_FLAG, active=True)
     def test_public_outline_course_outline(self):
@@ -1220,8 +1215,8 @@ class SequentialVisibilityTestCase(CacheIsolationTestCase):
             with self.subTest(user=user):
                 user_course_outline = get_user_course_outline(self.course_key, user, self.course_access_time)
 
-                self.assertEqual(len(user_course_outline.sections), 3)
-                self.assertEqual(len(user_course_outline.sequences), 6)
+                assert len(user_course_outline.sections) == 3
+                assert len(user_course_outline.sequences) == 6
 
                 is_sequence_accessible = [
                     seq.usage_key in user_course_outline.accessible_sequences
@@ -1229,16 +1224,9 @@ class SequentialVisibilityTestCase(CacheIsolationTestCase):
                 ]
 
                 if user in [self.anonymous_user, self.unenrolled_student]:
-                    self.assertTrue(
-                        all(not is_accessible for is_accessible in is_sequence_accessible),
-                        "Sequences shouldn't be accessible to anonymous or non-enrolled students "
-                        "for a public_outline course"
-                    )
+                    assert all(((not is_accessible) for is_accessible in is_sequence_accessible)), "Sequences shouldn't be accessible to anonymous or non-enrolled students for a public_outline course"
                 else:
-                    self.assertTrue(
-                        all(is_sequence_accessible),
-                        "Sequences should be accessible to enrolled, staff users for a public_outline course"
-                    )
+                    assert all(is_sequence_accessible), 'Sequences should be accessible to enrolled, staff users for a public_outline course'
 
     @override_waffle_flag(COURSE_ENABLE_UNENROLLED_ACCESS_FLAG, active=True)
     def test_private_course_outline(self):
@@ -1259,15 +1247,9 @@ class SequentialVisibilityTestCase(CacheIsolationTestCase):
                 ]
 
                 if user in [self.anonymous_user, self.unenrolled_student]:
-                    self.assertTrue(
-                        len(user_course_outline.sections) == len(user_course_outline.sequences) == 0,
-                        "No section of a private course should be visible to anonymous or non-enrolled student"
-                    )
+                    assert (len(user_course_outline.sections) == len(user_course_outline.sequences) == 0), 'No section of a private course should be visible to anonymous or non-enrolled student'
                 else:
                     # Enrolled or Staff User
-                    self.assertEqual(len(user_course_outline.sections), 3)
-                    self.assertEqual(len(user_course_outline.sequences), 6)
-                    self.assertTrue(
-                        all(is_sequence_accessible),
-                        "Sequences should be accessible to enrolled, staff users for a public_outline course"
-                    )
+                    assert len(user_course_outline.sections) == 3
+                    assert len(user_course_outline.sequences) == 6
+                    assert all(is_sequence_accessible), 'Sequences should be accessible to enrolled, staff users for a public_outline course'
