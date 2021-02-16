@@ -54,7 +54,7 @@ def request_certificate(request):
                 log.info('{course} is using allowlist certificates, and the user {user} is on its allowlist. Attempt '
                          'will be made to generate an allowlist certificate.'.format(course=course_key,
                                                                                      user=student.id))
-                generate_allowlist_certificate_task(user, enrollment.course_id)
+                generate_allowlist_certificate_task(student, enrollment.course_id)
             elif status in [CertificateStatuses.unavailable, CertificateStatuses.notpassing, CertificateStatuses.error]:
                 log_msg = u'Grading and certification requested for user %s in course %s via /request_certificate call'
                 log.info(log_msg, username, course_key)
@@ -102,6 +102,18 @@ def update_certificate(request):
                 'return_code': 1,
                 'content': 'unable to lookup key'
             }), content_type='application/json')
+
+        user = cert.user
+        if is_using_certificate_allowlist_and_is_on_allowlist(user, course_key):
+            log.warning('{course} is using allowlist certificates, and the user {user} is on its allowlist. Request to '
+                        'update the certificate will be ignored.'.format(course=course_key, user=user))
+            return HttpResponse(  # pylint: disable=http-response-with-content-type-json, http-response-with-json-dumps
+                json.dumps({
+                    'return_code': 1,
+                    'content': 'allowlist certificate'
+                }),
+                content_type='application/json'
+            )
 
         if 'error' in xqueue_body:
             cert.status = status.error
