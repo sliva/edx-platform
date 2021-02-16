@@ -21,7 +21,10 @@ from lms.djangoapps.certificates.models import (
     CertificateStatuses,
     GeneratedCertificate
 )
-from lms.djangoapps.certificates.signals import _fire_ungenerated_certificate_task
+from lms.djangoapps.certificates.signals import (
+    _listen_for_certificate_whitelist_append,
+    _fire_ungenerated_certificate_task
+)
 from lms.djangoapps.certificates.tasks import CERTIFICATE_DELAY_SECONDS
 from lms.djangoapps.certificates.tests.factories import CertificateWhitelistFactory
 from lms.djangoapps.certificates.tests.factories import GeneratedCertificateFactory
@@ -64,6 +67,13 @@ class WhitelistGeneratedCertificatesTest(ModuleStoreTestCase):
     """
     Tests for whitelisted student auto-certificate generation
     """
+
+    class SignalInstance:
+        def __init__(self):
+            pass
+
+        user = None
+        course_id = None
 
     def setUp(self):
         super().setUp()
@@ -157,10 +167,13 @@ class WhitelistGeneratedCertificatesTest(ModuleStoreTestCase):
                     course_id=self.ip_course.id,
                     whitelist=True
                 )
-
-                _fire_ungenerated_certificate_task(self.user, self.ip_course.id)
-                mock_generate_certificate_apply_async.assert_not_called()
-                mock_generate_allowlist_task.assert_called_with(self.user, self.ip_course.id)
+                with override_waffle_switch(AUTO_CERTIFICATE_GENERATION_SWITCH, active=True):
+                    val = self.SignalInstance()
+                    val.user = self.user
+                    val.course_id = self.ip_course.id
+                    _listen_for_certificate_whitelist_append(sender=None, instance=val)
+                    mock_generate_certificate_apply_async.assert_not_called()
+                    mock_generate_allowlist_task.assert_called_with(self.user, self.ip_course.id)
 
     def test_fire_task_allowlist_disabled(self):
         """
@@ -179,16 +192,19 @@ class WhitelistGeneratedCertificatesTest(ModuleStoreTestCase):
                     course_id=self.ip_course.id,
                     whitelist=True
                 )
-
-                _fire_ungenerated_certificate_task(self.user, self.ip_course.id)
-                mock_generate_certificate_apply_async.assert_called_with(
-                    countdown=CERTIFICATE_DELAY_SECONDS,
-                    kwargs={
-                        'student': six.text_type(self.user.id),
-                        'course_key': six.text_type(self.ip_course.id),
-                    }
-                )
-                mock_generate_allowlist_task.assert_not_called()
+                with override_waffle_switch(AUTO_CERTIFICATE_GENERATION_SWITCH, active=True):
+                    val = self.SignalInstance()
+                    val.user = self.user
+                    val.course_id = self.ip_course.id
+                    _listen_for_certificate_whitelist_append(sender=None, instance=val)
+                    mock_generate_certificate_apply_async.assert_called_with(
+                        countdown=CERTIFICATE_DELAY_SECONDS,
+                        kwargs={
+                            'student': six.text_type(self.user.id),
+                            'course_key': six.text_type(self.ip_course.id),
+                        }
+                    )
+                    mock_generate_allowlist_task.assert_not_called()
 
 
 class PassingGradeCertsTest(ModuleStoreTestCase):
