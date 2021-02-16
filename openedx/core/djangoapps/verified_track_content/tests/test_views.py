@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for verified track content views.
 """
@@ -35,7 +36,7 @@ class CohortingSettingsTestCase(SharedModuleStoreTestCase):
         """
         request = RequestFactory().get("dummy_url")
         request.user = UserFactory()
-        with self.assertRaises(Http404):
+        with pytest.raises(Http404):
             cohorting_settings(request, six.text_type(self.course.id))
 
     def test_cohorting_settings_enabled(self):
@@ -67,5 +68,5 @@ class CohortingSettingsTestCase(SharedModuleStoreTestCase):
         request = RequestFactory().get("dummy_url")
         request.user = AdminFactory()
         response = cohorting_settings(request, six.text_type(self.course.id))
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(expected_response, json.loads(response.content.decode('utf-8')))
+        assert 200 == response.status_code
+        assert expected_response == json.loads(response.content.decode('utf-8'))
