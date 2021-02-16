@@ -12,9 +12,6 @@ file and check it in at the same time as your model changes. To do that,
 ASSUMPTIONS: modules have unique IDs, even across different module_types
 
 """
-
-
-import codecs
 import csv
 import hashlib
 import json

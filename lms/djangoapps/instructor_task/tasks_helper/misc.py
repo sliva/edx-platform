@@ -16,14 +16,12 @@ from tempfile import TemporaryFile
 from time import time
 from zipfile import ZipFile  # lint-amnesty, pylint: disable=unused-import
 
-import unicodecsv
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.core.exceptions import ValidationError
 from django.core.files.storage import DefaultStorage
 from openassessment.data import OraAggregateData, OraDownloadData
 from pytz import UTC
 
-from common.djangoapps.util.file import UniversalNewlineIterator
 from lms.djangoapps.instructor_analytics.basic import get_proctored_exam_results
 from lms.djangoapps.instructor_analytics.csvs import format_dictlist
 from lms.djangoapps.survey.models import SurveyAnswer

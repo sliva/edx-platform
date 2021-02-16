@@ -33,7 +33,7 @@ class AlreadyRunningError(Exception):
     def __init__(self, message=None):
 
         if not message:
-            message = self.message
+            message = self.message  # pylint: disable=exception-message-attribute
         super().__init__(message)
 
 
@@ -45,7 +45,7 @@ class QueueConnectionError(Exception):
 
     def __init__(self, message=None):
         if not message:
-            message = self.message
+            message = self.message  # pylint: disable=exception-message-attribute
         super().__init__(message)
 
 
