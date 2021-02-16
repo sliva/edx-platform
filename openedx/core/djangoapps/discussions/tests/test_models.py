@@ -1,3 +1,4 @@
+import pytest
 """
 Perform basic validation of the models
 """
@@ -146,7 +147,7 @@ class DiscussionsConfigurationModelTest(TestCase):
         """
         Assert we can not fetch a non-existent record
         """
-        with self.assertRaises(DiscussionsConfiguration.DoesNotExist):
+        with pytest.raises(DiscussionsConfiguration.DoesNotExist):
             DiscussionsConfiguration.objects.get(
                 context_key=self.course_key_without_config,
             )
