@@ -3,7 +3,6 @@
 
 import pytest
 from django.test import TestCase
-from six.moves import range
 
 from lms.djangoapps.instructor_analytics.csvs import create_csv_response, format_dictlist, format_instances
 
@@ -17,7 +16,7 @@ class TestAnalyticsCSVS(TestCase):
 
         res = create_csv_response('robot.csv', header, datarows)
         self.assertEqual(res['Content-Type'], 'text/csv')
-        self.assertEqual(res['Content-Disposition'], u'attachment; filename={0}'.format('robot.csv'))
+        self.assertEqual(res['Content-Disposition'], 'attachment; filename={}'.format('robot.csv'))
         self.assertEqual(res.content.strip().decode('utf-8'), '"Name","Email"')
 
     def test_create_csv_response(self):
@@ -26,7 +25,7 @@ class TestAnalyticsCSVS(TestCase):
 
         res = create_csv_response('robot.csv', header, datarows)
         self.assertEqual(res['Content-Type'], 'text/csv')
-        self.assertEqual(res['Content-Disposition'], u'attachment; filename={0}'.format('robot.csv'))
+        self.assertEqual(res['Content-Disposition'], 'attachment; filename={}'.format('robot.csv'))
         self.assertEqual(
             res.content.strip().decode('utf-8'),
             '"Name","Email"\r\n"Jim","jim@edy.org"\r\n"Jake","jake@edy.org"\r\n"Jeeves","jeeves@edy.org"'
@@ -38,7 +37,7 @@ class TestAnalyticsCSVS(TestCase):
 
         res = create_csv_response('robot.csv', header, datarows)
         self.assertEqual(res['Content-Type'], 'text/csv')
-        self.assertEqual(res['Content-Disposition'], u'attachment; filename={0}'.format('robot.csv'))
+        self.assertEqual(res['Content-Disposition'], 'attachment; filename={}'.format('robot.csv'))
         self.assertEqual(res.content.strip().decode('utf-8'), '')
 
 
@@ -82,7 +81,7 @@ class TestAnalyticsFormatDictlist(TestCase):
 
         res = create_csv_response('robot.csv', header, datarows)
         self.assertEqual(res['Content-Type'], 'text/csv')
-        self.assertEqual(res['Content-Disposition'], u'attachment; filename={0}'.format('robot.csv'))
+        self.assertEqual(res['Content-Disposition'], 'attachment; filename={}'.format('robot.csv'))
         self.assertEqual(
             res.content.strip().decode('utf-8'),
             '"Name","Email"\r\n"Jim","jim@edy.org"\r\n"Jake","jake@edy.org"\r\n"Jeeves","jeeves@edy.org"'
@@ -92,7 +91,7 @@ class TestAnalyticsFormatDictlist(TestCase):
 class TestAnalyticsFormatInstances(TestCase):
     """ test format_instances method """
 
-    class TestDataClass(object):
+    class TestDataClass:
         """ Test class to generate objects for format_instances """
         def __init__(self):
             self.a_var = 'aval'
@@ -105,7 +104,7 @@ class TestAnalyticsFormatInstances(TestCase):
             return 'dval'
 
     def setUp(self):
-        super(TestAnalyticsFormatInstances, self).setUp()  # lint-amnesty, pylint: disable=super-with-arguments
+        super().setUp()
         self.instances = [self.TestDataClass() for _ in range(5)]
 
     def test_format_instances_response(self):
