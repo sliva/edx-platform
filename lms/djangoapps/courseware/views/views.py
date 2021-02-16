@@ -81,7 +81,8 @@ from lms.djangoapps.courseware.models import BaseStudentModuleHistory, StudentMo
 from lms.djangoapps.courseware.permissions import (  # lint-amnesty, pylint: disable=unused-import
     MASQUERADE_AS_STUDENT,
     VIEW_COURSE_HOME,
-    VIEW_COURSEWARE
+    VIEW_COURSEWARE,
+    VIEW_XQA_INTERFACE
 )
 from lms.djangoapps.courseware.url_helpers import get_redirect_url
 from lms.djangoapps.courseware.user_state_client import DjangoXBlockUserStateClient
