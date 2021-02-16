@@ -1,3 +1,4 @@
+import pytest
 """
 Test models, managers, and validators.
 """
@@ -72,9 +73,9 @@ class SubmitCompletionTestCase(CompletionSetUpMixin, TestCase):
                 completion=0.9,
             )
         completion.refresh_from_db()
-        self.assertEqual(completion.completion, 0.9)
-        self.assertFalse(isnew)
-        self.assertEqual(models.BlockCompletion.objects.count(), 1)
+        assert completion.completion == 0.9
+        assert not isnew
+        assert models.BlockCompletion.objects.count() == 1
 
     def test_unchanged_value(self):
         with self.assertNumQueries(SELECT + 2 * SAVEPOINT):
@@ -84,9 +85,9 @@ class SubmitCompletionTestCase(CompletionSetUpMixin, TestCase):
                 completion=0.5,
             )
         completion.refresh_from_db()
-        self.assertEqual(completion.completion, 0.5)
-        self.assertFalse(isnew)
-        self.assertEqual(models.BlockCompletion.objects.count(), 1)
+        assert completion.completion == 0.5
+        assert not isnew
+        assert models.BlockCompletion.objects.count() == 1
 
     def test_new_user(self):
         newuser = UserFactory()
@@ -96,8 +97,8 @@ class SubmitCompletionTestCase(CompletionSetUpMixin, TestCase):
                 block_key=self.block_key,
                 completion=0.0,
             )
-        self.assertTrue(isnew)
-        self.assertEqual(models.BlockCompletion.objects.count(), 2)
+        assert isnew
+        assert models.BlockCompletion.objects.count() == 2
 
     def test_new_block(self):
         newblock = UsageKey.from_string(u'block-v1:edx+test+run+type@video+block@puppers')
@@ -107,19 +108,19 @@ class SubmitCompletionTestCase(CompletionSetUpMixin, TestCase):
                 block_key=newblock,
                 completion=1.0,
             )
-        self.assertTrue(isnew)
-        self.assertEqual(models.BlockCompletion.objects.count(), 2)
+        assert isnew
+        assert models.BlockCompletion.objects.count() == 2
 
     def test_invalid_completion(self):
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             models.BlockCompletion.objects.submit_completion(
                 user=self.user,
                 block_key=self.block_key,
                 completion=1.2
             )
         completion = models.BlockCompletion.objects.get(user=self.user, block_key=self.block_key)
-        self.assertEqual(completion.completion, 0.5)
-        self.assertEqual(models.BlockCompletion.objects.count(), 1)
+        assert completion.completion == 0.5
+        assert models.BlockCompletion.objects.count() == 1
 
 
 @skip_unless_lms
@@ -135,14 +136,14 @@ class CompletionDisabledTestCase(CompletionSetUpMixin, TestCase):
         self.override_waffle_switch(False)
 
     def test_cannot_call_submit_completion(self):
-        self.assertEqual(models.BlockCompletion.objects.count(), 1)
-        with self.assertRaises(RuntimeError):
+        assert models.BlockCompletion.objects.count() == 1
+        with pytest.raises(RuntimeError):
             models.BlockCompletion.objects.submit_completion(
                 user=self.user,
                 block_key=self.block_key,
                 completion=0.9,
             )
-        self.assertEqual(models.BlockCompletion.objects.count(), 1)
+        assert models.BlockCompletion.objects.count() == 1
 
 
 @skip_unless_lms
@@ -163,29 +164,29 @@ class SubmitBatchCompletionTestCase(CompletionWaffleTestMixin, TestCase):
     def test_submit_batch_completion(self):
         blocks = [(self.block_key, 1.0)]
         models.BlockCompletion.objects.submit_batch_completion(self.user, blocks)
-        self.assertEqual(models.BlockCompletion.objects.count(), 1)
-        self.assertEqual(models.BlockCompletion.objects.last().completion, 1.0)
+        assert models.BlockCompletion.objects.count() == 1
+        assert models.BlockCompletion.objects.last().completion == 1.0
 
     def test_submit_batch_completion_without_waffle(self):
         with override_waffle_switch(ENABLE_COMPLETION_TRACKING_SWITCH, False):
-            with self.assertRaises(RuntimeError):
+            with pytest.raises(RuntimeError):
                 blocks = [(self.block_key, 1.0)]
                 models.BlockCompletion.objects.submit_batch_completion(self.user, blocks)
 
     def test_submit_batch_completion_with_same_block_new_completion_value(self):
         blocks = [(self.block_key, 0.0)]
-        self.assertEqual(models.BlockCompletion.objects.count(), 0)
+        assert models.BlockCompletion.objects.count() == 0
         models.BlockCompletion.objects.submit_batch_completion(self.user, blocks)
-        self.assertEqual(models.BlockCompletion.objects.count(), 1)
+        assert models.BlockCompletion.objects.count() == 1
         model = models.BlockCompletion.objects.first()
-        self.assertEqual(model.completion, 0.0)
+        assert model.completion == 0.0
         blocks = [
             (UsageKey.from_string('block-v1:edx+test+run+type@video+block@doggos'), 1.0),
         ]
         models.BlockCompletion.objects.submit_batch_completion(self.user, blocks)
-        self.assertEqual(models.BlockCompletion.objects.count(), 1)
+        assert models.BlockCompletion.objects.count() == 1
         model = models.BlockCompletion.objects.first()
-        self.assertEqual(model.completion, 1.0)
+        assert model.completion == 1.0
 
 
 @skip_unless_lms
@@ -216,19 +217,13 @@ class BatchCompletionMethodTests(CompletionWaffleTestMixin, TestCase):
         actual_completions = models.BlockCompletion.get_learning_context_completions(self.user, self.course_key)
         expected_block_keys = self.block_keys_with_runs[:3]
         expected_completions = dict(list(zip(expected_block_keys, [1.0, 0.8, 0.6])))
-        self.assertEqual(expected_completions, actual_completions)
+        assert expected_completions == actual_completions
 
     def test_get_learning_context_completions_empty_result_set(self):
-        self.assertEqual(
-            models.BlockCompletion.get_learning_context_completions(self.other_user, self.other_course_key),
-            {}
-        )
+        assert models.BlockCompletion.get_learning_context_completions(self.other_user, self.other_course_key) == {}
 
     def test_get_latest_block_completed(self):
-        self.assertEqual(
-            models.BlockCompletion.get_latest_block_completed(self.user, self.course_key).block_key,
-            self.block_keys[2]
-        )
+        assert models.BlockCompletion.get_latest_block_completed(self.user, self.course_key).block_key == self.block_keys[2]
 
     def test_get_latest_completed_none_exist(self):
-        self.assertIsNone(models.BlockCompletion.get_latest_block_completed(self.other_user, self.other_course_key))
+        assert models.BlockCompletion.get_latest_block_completed(self.other_user, self.other_course_key) is None

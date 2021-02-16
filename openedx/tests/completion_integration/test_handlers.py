@@ -1,3 +1,4 @@
+import pytest
 """
 Test signal handlers for completion.
 """
@@ -85,7 +86,7 @@ class ScorableCompletionHandlerTestCase(CompletionSetUpMixin, TestCase):
             context_key=self.context_key,
             block_key=self.block_key,
         )
-        self.assertEqual(completion.completion, expected_completion)
+        assert completion.completion == expected_completion
 
     @XBlock.register_temp_plugin(CustomScorableBlock, 'custom_scorable')
     def test_handler_skips_custom_block(self):
@@ -96,7 +97,7 @@ class ScorableCompletionHandlerTestCase(CompletionSetUpMixin, TestCase):
             context_key=self.context_key,
             block_key=custom_block_key,
         )
-        self.assertFalse(completion.exists())
+        assert not completion.exists()
 
     @XBlock.register_temp_plugin(ExcludedScorableBlock, 'excluded_scorable')
     def test_handler_skips_excluded_block(self):
@@ -107,7 +108,7 @@ class ScorableCompletionHandlerTestCase(CompletionSetUpMixin, TestCase):
             context_key=self.context_key,
             block_key=excluded_block_key,
         )
-        self.assertFalse(completion.exists())
+        assert not completion.exists()
 
     def test_handler_skips_discussion_block(self):
         discussion_block_key = self.context_key.make_usage_key(block_type='discussion', block_id='blue')
@@ -117,7 +118,7 @@ class ScorableCompletionHandlerTestCase(CompletionSetUpMixin, TestCase):
             context_key=self.context_key,
             block_key=discussion_block_key,
         )
-        self.assertFalse(completion.exists())
+        assert not completion.exists()
 
     def test_signal_calls_handler(self):
         with patch('completion.handlers.BlockCompletion.objects.submit_completion') as mock_handler:
@@ -157,7 +158,7 @@ class DisabledCompletionHandlerTestCase(CompletionSetUpMixin, TestCase):
             modified=datetime.utcnow().replace(tzinfo=utc),
             score_db_table='submissions',
         )
-        with self.assertRaises(BlockCompletion.DoesNotExist):
+        with pytest.raises(BlockCompletion.DoesNotExist):
             BlockCompletion.objects.get(
                 user=self.user,
                 context_key=self.context_key,
