@@ -78,8 +78,8 @@ def listen_for_passing_grade(sender, user, course_id, **kwargs):  # pylint: disa
     """
     if is_using_certificate_allowlist_and_is_on_allowlist(user, course_id):
         log.info('{course} is using allowlist certificates, and the user {user} is on its allowlist. Attempt will be '
-                 'made to generate an allowlist certificate after a passing grade was received.'.format(
-            course=course_id, user=user.id))
+                 'made to generate an allowlist certificate after a passing grade was received.'
+                 .format(course=course_id, user=user.id))
         return generate_allowlist_certificate_task(user, course_id)
 
     if not auto_certificate_generation_enabled():
