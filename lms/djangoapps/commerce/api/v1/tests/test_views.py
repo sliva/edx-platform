@@ -13,11 +13,13 @@ from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.urls import reverse, reverse_lazy
+from opaque_keys.edx.keys import CourseKey
 from rest_framework.utils.encoders import JSONEncoder
 
 from common.djangoapps.course_modes.models import CourseMode
+from common.djangoapps.course_modes.tests.factories import CourseModeFactory
 from lms.djangoapps.verify_student.models import VerificationDeadline
-from common.djangoapps.student.tests.factories import UserFactory
+from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 
@@ -145,6 +147,25 @@ class CourseRetrieveUpdateViewTests(CourseApiViewTestMixin, ModuleStoreTestCase)
         actual = json.loads(response.content.decode('utf-8'))
         expected = self._serialize_course(self.course, [self.course_mode])
         self.assertEqual(actual, expected)
+
+    @ddt.data(50, 50.00)
+    def test_min_price(self, min_price):
+        """ Verify the view handles the min_price type conversion on PUT method request """
+        course_mode = CourseModeFactory.create(
+            course_id=CourseKey.from_string('course-v1:edX+DemoX+Demo_Course'),
+            mode_slug='verified',
+            min_price=min_price
+        )
+        expected = self._serialize_course(self.course, [course_mode])
+        # breakpoint()
+        response = self.client.put(
+            self.path,
+            data=json.dumps(expected),
+            content_type=JSON_CONTENT_TYPE
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 50)
 
     def test_retrieve_invalid_course(self):
         """ The view should return HTTP 404 when retrieving data for a course that does not exist. """
