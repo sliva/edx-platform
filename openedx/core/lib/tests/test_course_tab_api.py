@@ -1,3 +1,4 @@
+import pytest
 """
 Tests for the plugin API
 """
@@ -19,7 +20,7 @@ class TestCourseTabApi(TestCase):
         Verify that get_plugin works as expected.
         """
         tab_type = CourseTabPluginManager.get_plugin("instructor")
-        self.assertEqual(tab_type.title, "Instructor")
+        assert tab_type.title == 'Instructor'
 
-        with self.assertRaises(PluginError):
+        with pytest.raises(PluginError):
             CourseTabPluginManager.get_plugin("no_such_type")
