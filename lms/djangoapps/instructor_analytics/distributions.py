@@ -152,8 +152,7 @@ def profile_distribution(course_id, feature):
         # query_distribution is of the form [{'featureval': 'value1', 'featureval__count': 4},
         #    {'featureval': 'value2', 'featureval__count': 2}, ...]
 
-        distribution = {vald[feature]: vald[feature + '__count']
-                            for vald in query_distribution}
+        distribution = {vald[feature]: vald[feature + '__count'] for vald in query_distribution}
         # distribution is of the form {'value1': 4, 'value2': 2, ...}
 
         # change none to no_data for valid json key

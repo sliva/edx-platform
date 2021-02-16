@@ -131,12 +131,10 @@ def enrolled_students_features(course_key, features):
                 meta_key = feature.split('.')[1]
                 meta_features.append((feature, meta_key))
 
-        student_dict = {feature: extract_attr(student, feature)
-                            for feature in student_features}
+        student_dict = {feature: extract_attr(student, feature) for feature in student_features}
         profile = student.profile
         if profile is not None:
-            profile_dict = {feature: extract_attr(profile, feature)
-                                for feature in profile_features}
+            profile_dict = {feature: extract_attr(profile, feature) for feature in profile_features}
             student_dict.update(profile_dict)
 
             # now fetch the requested meta fields
