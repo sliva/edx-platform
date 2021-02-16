@@ -99,7 +99,7 @@ from openedx.core.djangoapps.credit.api import (
     is_credit_course,
     is_user_eligible_for_credit
 )
-from openedx.core.djangoapps.enrollments.api import add_enrollment  # lint-amnesty, pylint: disable=unused-import
+from openedx.core.djangoapps.enrollments.api import add_enrollment, get_enrollment  # lint-amnesty, pylint: disable=unused-import
 from openedx.core.djangoapps.enrollments.permissions import ENROLL_IN_COURSE
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
