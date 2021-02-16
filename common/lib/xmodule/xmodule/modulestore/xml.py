@@ -33,6 +33,7 @@ from xmodule.modulestore import COURSE_ROOT, LIBRARY_ROOT, ModuleStoreEnum, Modu
 from xmodule.modulestore.xml_exporter import DEFAULT_CONTENT_FIELDS
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import (  # lint-amnesty, pylint: disable=unused-import
+    DEPRECATION_VSCOMPAT_EVENT,
     AsideKeyGenerator,
     OpaqueKeyReader,
     XMLParsingSystem,

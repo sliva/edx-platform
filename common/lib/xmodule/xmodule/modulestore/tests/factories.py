@@ -24,6 +24,7 @@ from xmodule.course_module import Textbook
 from xmodule.modulestore import ModuleStoreEnum, prefer_xmodules
 from xmodule.modulestore.tests.sample_courses import TOY_BLOCK_INFO_TREE, default_block_info_tree
 from xmodule.tabs import CourseTab
+from xmodule.x_module import DEPRECATION_VSCOMPAT_EVENT  # lint-amnesty, pylint: disable=unused-import
 
 
 LOG = logging.getLogger(__name__)
