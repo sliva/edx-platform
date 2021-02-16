@@ -17,6 +17,7 @@ from xmodule.modulestore.django import modulestore
 from common.djangoapps.util.json_request import JsonResponse, JsonResponseBadRequest
 from common.djangoapps.util.request_rate_limiter import BadRequestRateLimiter
 from lms.djangoapps.certificates.api import (
+    generate_allowlist_certificate_task,
     generate_user_certificates,
     is_using_certificate_allowlist_and_is_on_allowlist
 )
@@ -50,7 +51,7 @@ def request_certificate(request):
             course = modulestore().get_course(course_key, depth=2)
 
             status = certificate_status_for_student(student, course_key)['status']
-            if is_using_certificate_allowlist_and_is_on_allowlist(user, course_key):
+            if is_using_certificate_allowlist_and_is_on_allowlist(student, course_key):
                 log.info('{course} is using allowlist certificates, and the user {user} is on its allowlist. Attempt '
                          'will be made to generate an allowlist certificate.'.format(course=course_key,
                                                                                      user=student.id))
