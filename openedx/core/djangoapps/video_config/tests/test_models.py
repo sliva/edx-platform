@@ -59,14 +59,8 @@ class FeatureFlagTestMixin(object):
             course_id=self.course_id_1,
             enabled_for_course=enabled_for_course_1
         ):
-            self.assertEqual(
-                all_courses_model_class.feature_enabled(self.course_id_1),
-                global_flag and (enabled_for_all_courses or enabled_for_course_1)
-            )
-            self.assertEqual(
-                all_courses_model_class.feature_enabled(self.course_id_2),
-                global_flag and enabled_for_all_courses
-            )
+            assert all_courses_model_class.feature_enabled(self.course_id_1) == (global_flag and (enabled_for_all_courses or enabled_for_course_1))
+            assert all_courses_model_class.feature_enabled(self.course_id_2) == (global_flag and enabled_for_all_courses)
 
     def verify_enable_disable_course_flag(self, all_courses_model_class, course_specific_model_class):
         """
@@ -80,7 +74,7 @@ class FeatureFlagTestMixin(object):
             course_id=self.course_id_1,
             enabled_for_course=True
         ):
-            self.assertTrue(all_courses_model_class.feature_enabled(self.course_id_1))
+            assert all_courses_model_class.feature_enabled(self.course_id_1)
             with video_feature_flags(
                 all_courses_model_class=all_courses_model_class,
                 course_specific_model_class=course_specific_model_class,
@@ -89,7 +83,7 @@ class FeatureFlagTestMixin(object):
                 course_id=self.course_id_1,
                 enabled_for_course=False
             ):
-                self.assertFalse(all_courses_model_class.feature_enabled(self.course_id_1))
+                assert not all_courses_model_class.feature_enabled(self.course_id_1)
 
     def verify_enable_disable_globally(self, all_courses_model_class, course_specific_model_class):
         """
@@ -101,23 +95,23 @@ class FeatureFlagTestMixin(object):
             global_flag=True,
             enabled_for_all_courses=True,
         ):
-            self.assertTrue(all_courses_model_class.feature_enabled(self.course_id_1))
-            self.assertTrue(all_courses_model_class.feature_enabled(self.course_id_2))
+            assert all_courses_model_class.feature_enabled(self.course_id_1)
+            assert all_courses_model_class.feature_enabled(self.course_id_2)
             with video_feature_flags(
                 all_courses_model_class=all_courses_model_class,
                 course_specific_model_class=course_specific_model_class,
                 global_flag=True,
                 enabled_for_all_courses=False,
             ):
-                self.assertFalse(all_courses_model_class.feature_enabled(self.course_id_1))
-                self.assertFalse(all_courses_model_class.feature_enabled(self.course_id_2))
+                assert not all_courses_model_class.feature_enabled(self.course_id_1)
+                assert not all_courses_model_class.feature_enabled(self.course_id_2)
                 with video_feature_flags(
                     all_courses_model_class=all_courses_model_class,
                     course_specific_model_class=course_specific_model_class,
                     global_flag=False,
                 ):
-                    self.assertFalse(all_courses_model_class.feature_enabled(self.course_id_1))
-                    self.assertFalse(all_courses_model_class.feature_enabled(self.course_id_2))
+                    assert not all_courses_model_class.feature_enabled(self.course_id_1)
+                    assert not all_courses_model_class.feature_enabled(self.course_id_2)
 
 
 @ddt.ddt
