@@ -54,10 +54,10 @@ def _listen_for_certificate_whitelist_append(sender, instance, **kwargs):  # pyl
     """
     Listen for a user being added to or modified on the whitelist (allowlist)
     """
-    if is_using_certificate_allowlist_and_is_on_allowlist(user, instance.course_id):
+    if is_using_certificate_allowlist_and_is_on_allowlist(instance.user, instance.course_id):
         log.info('{course} is using allowlist certificates, and the user {user} is on its allowlist. Attempt will be '
                  'made to generate an allowlist certificate after allowlist append.'.format(course=instance.course_id,
-                                                                                            user=user.id))
+                                                                                            user=instance.user.id))
         return generate_allowlist_certificate_task(user, instance.course_id)
 
     if not auto_certificate_generation_enabled():
